@@ -154,3 +154,35 @@ class TestAPIEndpoints:
         assert "cost_delta_vs_baseline" in data
         assert "narrative_impact" in data
         assert data["cost_delta_vs_baseline"] > 0
+
+    def test_get_optimization_algorithms(self):
+        res = client.get("/api/v1/optimize/algorithms")
+        assert res.status_code == 200
+        data = res.json()
+        assert len(data) == 3
+        ids = [a["id"] for a in data]
+        assert "regulatory" in ids
+        assert "nasa_milp" in ids
+        assert "minimax_robust" in ids
+
+    def test_post_optimize_nasa_milp(self):
+        payload = {
+            "algorithm": "nasa_milp",
+            "scenario_type": "baseline",
+            "investments": {
+                "zbo_year": 2036,
+                "isru_enabled": True,
+                "earth_new_enabled": False,
+            },
+            "discount_rate": 0.08,
+        }
+        res = client.post("/api/v1/optimize", json=payload)
+        assert res.status_code == 200
+        data = res.json()
+        assert data["algorithm"] == "nasa_milp"
+        assert "metadata" in data
+        assert "channel_plans" in data
+        assert "simulation" in data
+        assert "comparison_with_regulatory" in data
+        assert data["comparison_with_regulatory"]["savings_pct"] >= 0.0
+

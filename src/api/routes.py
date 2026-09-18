@@ -42,6 +42,11 @@ from src.core.exporter import (
     generate_economics_dataframe,
     generate_constraints_log_dataframe,
 )
+from src.core.optimizers import (
+    OptimizerAlgorithm,
+    ALGORITHM_REGISTRY,
+    optimize_plans,
+)
 from src.api.schemas import (
     SimulationRequest,
     SimulationResponse,
@@ -55,6 +60,10 @@ from src.api.schemas import (
     SensitivityResponse,
     GeopoliticalShockRequest,
     GeopoliticalShockResponse,
+    OptimizerAlgorithmDTO,
+    OptimizeRequest,
+    OptimizeResponse,
+    ChannelPlanInput,
 )
 
 router = APIRouter(prefix="/api/v1", tags=["Orbital Fuel Depot Planning API"])
@@ -606,4 +615,123 @@ def apply_geopolitical_shock(request: GeopoliticalShockRequest):
         npv_delta_vs_baseline=npv_delta,
         service_delta_vs_baseline=service_delta,
         narrative_impact=narrative,
+    )
+
+
+@router.get(
+    "/optimize/algorithms",
+    response_model=List[OptimizerAlgorithmDTO],
+    summary="Справочник доступных математических ядер оптимизации",
+)
+def get_optimization_algorithms():
+    """
+    Возвращает список доступных алгоритмических ядер (Регламент ТЗ, NASA MILP, Робастный Minimax)
+    с их научным обоснованием, описанием и целевыми метриками.
+    """
+    res = []
+    for algo_enum, meta in ALGORITHM_REGISTRY.items():
+        res.append(
+            OptimizerAlgorithmDTO(
+                id=meta.id,
+                name=meta.name,
+                short_name=meta.short_name,
+                foundation=meta.foundation,
+                description=meta.description,
+                target_metric=meta.target_metric,
+                badge_style=meta.badge_style,
+                recommended=meta.recommended,
+            )
+        )
+    return res
+
+
+@router.post(
+    "/optimize",
+    response_model=OptimizeResponse,
+    summary="Автоматическая оптимизация плана снабжения выбранным ядром",
+)
+def run_optimization(request: OptimizeRequest):
+    """
+    Выполняет расчет оптимальных объемов бронирования и отбора по 5 каналам
+    с использованием выбранного алгоритма (Регламент ТЗ / NASA MILP / Робастный Minimax).
+    Возвращает готовый план и результаты физико-экономической симуляции.
+    """
+    try:
+        algo_enum = OptimizerAlgorithm(request.algorithm)
+    except ValueError:
+        algo_enum = OptimizerAlgorithm.NASA_MILP
+
+    inv_dict = request.investments.model_dump()
+    years = request.horizon_years or list(range(2035, 2041))
+    config = SimulationConfig(
+        start_year=min(years),
+        end_year=max(years),
+        discount_rate=request.discount_rate,
+    )
+
+    type_map = {
+        "baseline": ScenarioType.BASELINE,
+        "stress": ScenarioType.MANDATORY_STRESS,
+        "high_demand": ScenarioType.HIGH_DEMAND,
+        "low_demand": ScenarioType.LOW_DEMAND,
+        "geopolitical": ScenarioType.GEOPOLITICAL_SHOCK,
+    }
+    scen_type = type_map.get(request.scenario_type, ScenarioType.BASELINE)
+
+    # 1. Compute optimized plans with selected algorithm
+    opt_plans = optimize_plans(
+        algorithm=algo_enum,
+        investments_state=inv_dict,
+        years=years,
+        discount_rate=request.discount_rate,
+    )
+    opt_run = apply_scenario(plans=opt_plans, scenario_type=scen_type, config=config)
+
+    # 2. Compute benchmark regulatory plans for delta calculation
+    reg_plans = optimize_plans(
+        algorithm=OptimizerAlgorithm.REGULATORY,
+        investments_state=inv_dict,
+        years=years,
+        discount_rate=request.discount_rate,
+    )
+    reg_run = apply_scenario(plans=reg_plans, scenario_type=scen_type, config=config)
+
+    reg_npv = reg_run.economics.total_npv_cost
+    cur_npv = opt_run.economics.total_npv_cost
+    delta_npv = round(reg_npv - cur_npv, 2)
+    savings_pct = round((delta_npv / reg_npv * 100.0), 2) if reg_npv > 0 else 0.0
+
+    # Format plans for response
+    channel_plans_out: Dict[int, Dict[str, ChannelPlanInput]] = {}
+    for y in sorted(opt_plans.keys()):
+        channel_plans_out[y] = {}
+        for ch_id, ch_order in opt_plans[y].orders.items():
+            channel_plans_out[y][ch_id.value] = ChannelPlanInput(
+                reserved_capacity=ch_order.reserved_capacity,
+                target_order_volume=ch_order.order_volume,
+            )
+
+    meta = ALGORITHM_REGISTRY[algo_enum]
+    meta_dto = OptimizerAlgorithmDTO(
+        id=meta.id,
+        name=meta.name,
+        short_name=meta.short_name,
+        foundation=meta.foundation,
+        description=meta.description,
+        target_metric=meta.target_metric,
+        badge_style=meta.badge_style,
+        recommended=meta.recommended,
+    )
+
+    return OptimizeResponse(
+        algorithm=algo_enum.value,
+        metadata=meta_dto,
+        channel_plans=channel_plans_out,
+        simulation=_format_simulation_response(opt_run),
+        comparison_with_regulatory={
+            "regulatory_npv": round(reg_npv, 2),
+            "current_npv": round(cur_npv, 2),
+            "delta_npv": delta_npv,
+            "savings_pct": savings_pct,
+        },
     )

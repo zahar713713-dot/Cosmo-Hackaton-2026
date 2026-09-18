@@ -105,3 +105,30 @@ export interface SimulationResult {
   yearly_economics: YearlyEconomicsData[];
   violations: ConstraintViolationItem[];
 }
+
+export type OptimizerAlgorithmType = 'regulatory' | 'nasa_milp' | 'minimax_robust';
+
+export interface AlgorithmMetadata {
+  id: OptimizerAlgorithmType;
+  name: string;
+  short_name: string;
+  foundation: string;
+  description: string;
+  target_metric: string;
+  badge_style: string;
+  recommended: boolean;
+}
+
+export interface OptimizeResponse {
+  algorithm: OptimizerAlgorithmType;
+  metadata: AlgorithmMetadata;
+  channel_plans: Record<number, Record<string, ChannelPlan>>;
+  simulation: SimulationResult;
+  comparison_with_regulatory: {
+    regulatory_npv: number;
+    current_npv: number;
+    delta_npv: number;
+    savings_pct: number;
+  };
+}
+

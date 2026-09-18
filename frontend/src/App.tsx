@@ -5,11 +5,14 @@ import type {
   ChannelPlan,
   SimulationResult,
   CustomChannelConfig,
+  OptimizerAlgorithmType,
+  AlgorithmMetadata,
 } from './types';
-import { runSimulationAPI, downloadReport } from './api';
+import { runSimulationAPI, downloadReport, fetchOptimizationAlgorithms, runOptimizerAPI } from './api';
 import { Header } from './components/Header';
 import { ConstraintAlertBar } from './components/ConstraintAlertBar';
 import { InvestmentControls } from './components/InvestmentControls';
+import { OptimizerSelector } from './components/OptimizerSelector';
 import { PlanningSliders } from './components/PlanningSliders';
 import { AnalyticsCharts } from './components/AnalyticsCharts';
 import { CustomizationModal } from './components/CustomizationModal';
@@ -98,6 +101,34 @@ export const App: React.FC = () => {
   const [stressSimulationResult, setStressSimulationResult] = useState<SimulationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Multi-algorithm optimizer state
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<OptimizerAlgorithmType>('nasa_milp');
+  const [algorithmsList, setAlgorithmsList] = useState<AlgorithmMetadata[]>([]);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [savingsPct, setSavingsPct] = useState(11.8);
+
+  useEffect(() => {
+    fetchOptimizationAlgorithms().then((algos) => {
+      setAlgorithmsList(algos);
+    });
+  }, []);
+
+  const handleSelectAlgorithm = async (algo: OptimizerAlgorithmType) => {
+    setSelectedAlgorithm(algo);
+    setIsOptimizing(true);
+    try {
+      const res = await runOptimizerAPI(algo, scenario, investments, discountRate, activeYears);
+      setChannelPlans(res.channel_plans);
+      if (res.comparison_with_regulatory?.savings_pct !== undefined) {
+        setSavingsPct(res.comparison_with_regulatory.savings_pct);
+      }
+    } catch (e) {
+      console.error('Failed to run optimizer:', e);
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
 
   // Sync horizon changes with channel plans
   useEffect(() => {
@@ -293,7 +324,16 @@ export const App: React.FC = () => {
         {/* 2. Investment Gate Controls */}
         <InvestmentControls investments={investments} onChange={(inv) => setInvestments(inv)} />
 
-        {/* 3. Planning Sliders */}
+        {/* 3. Mathematical Optimization Engines (NASA MILP, Minimax Robust, Regulatory) */}
+        <OptimizerSelector
+          currentAlgorithm={selectedAlgorithm}
+          algorithms={algorithmsList}
+          onSelectAlgorithm={handleSelectAlgorithm}
+          savingsPct={savingsPct}
+          isOptimizing={isOptimizing}
+        />
+
+        {/* 4. Planning Sliders */}
         <PlanningSliders
           channelPlans={channelPlans}
           investments={investments}

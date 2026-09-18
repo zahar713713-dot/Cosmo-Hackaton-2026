@@ -226,3 +226,33 @@ class GeopoliticalShockResponse(BaseModel):
     npv_delta_vs_baseline: float
     service_delta_vs_baseline: float
     narrative_impact: str
+
+
+class OptimizerAlgorithmDTO(BaseModel):
+    id: str
+    name: str
+    short_name: str
+    foundation: str
+    description: str
+    target_metric: str
+    badge_style: str
+    recommended: bool
+
+
+class OptimizeRequest(BaseModel):
+    algorithm: str = Field(
+        "nasa_milp",
+        description="Алгоритм оптимизации: 'regulatory', 'nasa_milp', 'minimax_robust'",
+    )
+    scenario_type: str = Field("baseline", description="Тип сценария для симуляции")
+    investments: InvestmentsInput = Field(default_factory=InvestmentsInput)
+    horizon_years: Optional[List[int]] = Field(None, description="Список расчетных лет (по умолчанию 2035–2040)")
+    discount_rate: float = Field(DEFAULT_DISCOUNT_RATE, ge=0.0, le=0.5)
+
+
+class OptimizeResponse(BaseModel):
+    algorithm: str
+    metadata: OptimizerAlgorithmDTO
+    channel_plans: Dict[int, Dict[str, ChannelPlanInput]]
+    simulation: SimulationResponse
+    comparison_with_regulatory: Dict[str, float]
