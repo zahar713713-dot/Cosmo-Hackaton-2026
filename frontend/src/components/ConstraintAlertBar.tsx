@@ -1,0 +1,210 @@
+import React, { useState } from 'react';
+import type { SimulationResult } from '../types';
+import { CheckCircle2, AlertTriangle, XCircle, ChevronDown, ChevronUp, ShieldAlert, Zap } from 'lucide-react';
+
+interface ConstraintAlertBarProps {
+  simulation: SimulationResult | null;
+}
+
+export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulation }) => {
+  const [showAllDetails, setShowAllDetails] = useState(false);
+
+  if (!simulation) return null;
+
+  const { violations, summary_kpi } = simulation;
+
+  // Key checks analysis
+  const critViolations = violations.filter((v) => v.rule_code === 'CRITICAL_SERVICE_LEVEL');
+  const totViolations = violations.filter((v) => v.rule_code === 'TOTAL_SERVICE_LEVEL');
+  const capex37Violations = violations.filter((v) => v.rule_code === 'CAPEX_2037_LIMIT');
+  const capexTotViolations = violations.filter((v) => v.rule_code === 'CAPEX_TOTAL_LIMIT');
+  const reserveViolations = violations.filter((v) => v.rule_code === 'RESERVE_45_DAYS');
+  const storageViolations = violations.filter((v) => v.rule_code === 'STORAGE_CAPACITY_OVERFLOW');
+  const emergencyViolations = violations.filter((v) => v.rule_code === 'EMERGENCY_CONSECUTIVE_LIMIT');
+  const stressLossViolations = violations.filter((v) => v.rule_code === 'STRESS_LOSS_CEILING_BREACH');
+
+  const cards = [
+    {
+      tag: '<крит. спрос>',
+      title: 'КРИТИЧЕСКИЙ SLA',
+      rule: '≥ 99.0%',
+      status: critViolations.length === 0,
+      actual: `${(summary_kpi.average_service_level_critical * 100).toFixed(1)}%`,
+      violation: critViolations[0],
+    },
+    {
+      tag: '<общий спрос>',
+      title: 'ОБЩИЙ SLA',
+      rule: '≥ 97.0%',
+      status: totViolations.length === 0,
+      actual: `${(summary_kpi.average_service_level_total * 100).toFixed(1)}%`,
+      violation: totViolations[0],
+    },
+    {
+      tag: '<инвест этап 1>',
+      title: 'CAPEX ДО 2037',
+      rule: '≤ 1 800 МЛН',
+      status: capex37Violations.length === 0,
+      actual: `${summary_kpi.total_capex_m_cu.toFixed(1)}M`,
+      violation: capex37Violations[0],
+    },
+    {
+      tag: '<полный бюджет>',
+      title: 'СУММАРНЫЙ CAPEX',
+      rule: '≤ 2 800 МЛН',
+      status: capexTotViolations.length === 0,
+      actual: `${summary_kpi.total_capex_m_cu.toFixed(1)}M`,
+      violation: capexTotViolations[0],
+    },
+    {
+      tag: '<буферный запас>',
+      title: 'РЕЗЕРВ 45 ДНЕЙ',
+      rule: 'ПОЛНЫЙ БУФЕР',
+      status: reserveViolations.length === 0,
+      actual: reserveViolations.length === 0 ? 'НОРМА' : 'ДЕФИЦИТ',
+      violation: reserveViolations[0],
+    },
+    {
+      tag: '<емкость оту>',
+      title: 'ОБЪЕМ БАКОВ',
+      rule: '70Т / 120Т (ZBO)',
+      status: storageViolations.length === 0,
+      actual: storageViolations.length === 0 ? 'НОРМА' : 'ПЕРЕПОЛНЕНИЕ',
+      violation: storageViolations[0],
+    },
+  ];
+
+  return (
+    <section className="bg-[#0a0a0c] rounded-2xl border border-neutral-800 p-5 mb-6 shadow-2xl relative overflow-hidden">
+      {/* Top bar with status pill and audit toggle */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-neutral-800 pb-4">
+        <div className="flex items-center gap-3">
+          {summary_kpi.is_feasible ? (
+            <div className="flex items-center gap-2 bg-[#ccff00] text-black px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase shadow-lg shadow-[#ccff00]/20">
+              <Zap className="w-3.5 h-3.5 fill-black" />
+              <span>ПЛАН ИСПОЛНИМ // ВСЕ ОГРАНИЧЕНИЯ В НОРМЕ</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-[#ff2a5f] text-white px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase animate-pulse shadow-lg shadow-[#ff2a5f]/20">
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>НАРУШЕНЫ ОГРАНИЧЕНИЯ КЕЙСА ({violations.length})</span>
+            </div>
+          )}
+          <span className="text-[11px] text-neutral-500 font-mono tracking-wide hidden md:inline">
+            &lt;контроль критериев 4, 10, 19&gt;
+          </span>
+        </div>
+
+        <button
+          onClick={() => setShowAllDetails(!showAllDetails)}
+          className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-[#ccff00] transition font-mono border border-neutral-800 hover:border-neutral-600 px-3 py-1 rounded-full bg-neutral-900/60"
+        >
+          <span>ПОДРОБНЫЙ АУДИТ ({violations.length})</span>
+          {showAllDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5 text-[#ccff00]" />}
+        </button>
+      </div>
+
+      {/* 6 Metric Grid Blocks */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {cards.map((c, i) => (
+          <div
+            key={i}
+            className={`p-4 rounded-xl border transition-all flex flex-col justify-between relative ${
+              c.status
+                ? 'bg-[#0f0f12] border-neutral-800/90 hover:border-neutral-700'
+                : 'bg-[#1a080d] border-[#ff2a5f]/60 text-white shadow-lg shadow-[#ff2a5f]/10'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between gap-1 mb-1">
+                <span className="text-[10px] text-neutral-500 font-mono">{c.tag}</span>
+                {c.status ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#ccff00] shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#ff2a5f] shrink-0 animate-bounce" />
+                )}
+              </div>
+              <div className="text-[11px] font-black uppercase tracking-wider text-neutral-300 truncate">
+                {c.title}
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <div
+                className={`text-xl font-black font-mono tracking-tight ${
+                  c.status ? 'text-white' : 'text-[#ff2a5f]'
+                }`}
+              >
+                {c.actual}
+              </div>
+              <div className="text-[10px] text-neutral-500 font-mono mt-0.5">{c.rule}</div>
+            </div>
+
+            {!c.status && c.violation && (
+              <div className="mt-2 text-[10px] leading-tight text-rose-300 bg-rose-950/80 p-1.5 rounded border border-rose-800/80 font-mono">
+                {c.violation.message}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Additional specific rule flags if violated */}
+      {(emergencyViolations.length > 0 || stressLossViolations.length > 0) && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {emergencyViolations.map((v, i) => (
+            <div
+              key={i}
+              className="text-xs bg-amber-950/80 border border-amber-500 text-amber-300 px-3.5 py-1.5 rounded-full flex items-center gap-2 font-mono"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+              <span>{v.message}</span>
+            </div>
+          ))}
+          {stressLossViolations.map((v, i) => (
+            <div
+              key={i}
+              className="text-xs bg-rose-950/80 border border-rose-500 text-rose-300 px-3.5 py-1.5 rounded-full flex items-center gap-2 font-mono"
+            >
+              <XCircle className="w-3.5 h-3.5 text-rose-400" />
+              <span>{v.message}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Expandable detailed audit list */}
+      {showAllDetails && (
+        <div className="mt-5 pt-4 border-t border-neutral-800 animate-fadeIn">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-black uppercase tracking-wider text-neutral-300">
+              ЖУРНАЛ КОНТРОЛЬНЫХ ОГРАНИЧЕНИЙ И ШТРАФОВ (КРИТЕРИЙ 19)
+            </span>
+            <span className="text-[11px] text-neutral-500 font-mono">Всего записей: {violations.length}</span>
+          </div>
+
+          <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+            {violations.length === 0 ? (
+              <div className="text-xs text-[#ccff00] p-3 rounded-xl bg-neutral-900/60 border border-neutral-800 font-mono">
+                ✓ Нарушений не зафиксировано. Программа поставок полностью удовлетворяет жестким ограничениям ТЗ.
+              </div>
+            ) : (
+              violations.map((v, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 text-xs p-3 rounded-xl bg-[#14080b] border border-rose-900/60 font-mono"
+                >
+                  <span className="text-xs font-black px-2 py-0.5 rounded-full bg-[#ff2a5f] text-white shrink-0">
+                    {v.rule_code}
+                  </span>
+                  <span className="text-neutral-300 flex-1">{v.message}</span>
+                  {v.year && <span className="text-neutral-500 font-mono">Год: {v.year}</span>}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+};
