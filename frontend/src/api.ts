@@ -8,7 +8,263 @@ import type {
   ConstraintViolationItem,
 } from './types';
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
+const API_BASE = '/api/v1';
+const DIRECT_BACKEND_BASE = 'http://127.0.0.1:8000/api/v1';
+
+function triggerBlobDownload(blob: Blob, filename: string) {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
+
+function escapeXml(str: string | number): string {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function generateExcelXmlWorkbook(sim: SimulationResult, scenarioType: ScenarioType): string {
+  const { summary_kpi, yearly_balance, yearly_economics, violations } = sim;
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="Header">
+   <Font ss:FontName="Calibri" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#0F172A" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="Accent">
+   <Font ss:FontName="Calibri" ss:Bold="1" ss:Color="#000000"/>
+   <Interior ss:Color="#CCFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="Number">
+   <NumberFormat ss:Format="#,##0.00"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Summary_KPI">
+  <Table>
+   <Row ss:StyleID="Accent">
+    <Cell><Data ss:Type="String">Ключевой показатель (KPI)</Data></Cell>
+    <Cell><Data ss:Type="String">Значение</Data></Cell>
+    <Cell><Data ss:Type="String">Единица измерения</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Сценарий расчета</Data></Cell>
+    <Cell><Data ss:Type="String">${escapeXml(scenarioType)}</Data></Cell>
+    <Cell><Data ss:Type="String">-</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Исполнимость плана</Data></Cell>
+    <Cell><Data ss:Type="String">${summary_kpi.is_feasible ? 'Исполним (Все критерии OK)' : 'Нарушены ограничения'}</Data></Cell>
+    <Cell><Data ss:Type="String">-</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Совокупные затраты LCC</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.total_cost_m_cu}</Data></Cell>
+    <Cell><Data ss:Type="String">млн у.е.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">NPV затрат (r=8%)</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.npv_cost_m_cu}</Data></Cell>
+    <Cell><Data ss:Type="String">млн у.е.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Общий объем спроса</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.total_demand_tons}</Data></Cell>
+    <Cell><Data ss:Type="String">тонн</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Обслуженный спрос</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.total_served_demand_tons}</Data></Cell>
+    <Cell><Data ss:Type="String">тонн</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Суммарный дефицит</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.total_deficit_tons}</Data></Cell>
+    <Cell><Data ss:Type="String">тонн</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Средний уровень сервиса (Общий)</Data></Cell>
+    <Cell><Data ss:Type="String">${(summary_kpi.average_service_level_total * 100).toFixed(2)}%</Data></Cell>
+    <Cell><Data ss:Type="String">%</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Средний уровень сервиса (Критический)</Data></Cell>
+    <Cell><Data ss:Type="String">${(summary_kpi.average_service_level_critical * 100).toFixed(2)}%</Data></Cell>
+    <Cell><Data ss:Type="String">%</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Суммарный CAPEX</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.total_capex_m_cu}</Data></Cell>
+    <Cell><Data ss:Type="String">млн у.е.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Потери оборота</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${summary_kpi.total_losses_tons}</Data></Cell>
+    <Cell><Data ss:Type="String">тонн</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Material_Balance">
+  <Table>
+   <Row ss:StyleID="Header">
+    <Cell><Data ss:Type="String">Год</Data></Cell>
+    <Cell><Data ss:Type="String">Спрос общий [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Спрос критический [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Earth-Core [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Earth-Flex [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Earth-New [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Lunar-ISRU [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Emergency [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Потери [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Отпущено [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Остаток на конец [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Емкость баков [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Резерв 45д [т]</Data></Cell>
+    <Cell><Data ss:Type="String">Дефицит [т]</Data></Cell>
+    <Cell><Data ss:Type="String">SLA Общий [%]</Data></Cell>
+   </Row>
+   ${yearly_balance.map((b) => `
+   <Row>
+    <Cell><Data ss:Type="Number">${b.year}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.demand_total}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.demand_critical}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.channel_deliveries['Earth-Core'] || 0}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.channel_deliveries['Earth-Flex'] || 0}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.channel_deliveries['Earth-New'] || 0}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.channel_deliveries['Lunar-ISRU'] || 0}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.channel_deliveries['Emergency'] || 0}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.losses.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.served_demand_total.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.end_stock.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.storage_capacity_max}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.required_reserve_45d.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${b.deficit_total.toFixed(2)}</Data></Cell>
+    <Cell><Data ss:Type="String">${(b.service_level_total * 100).toFixed(1)}%</Data></Cell>
+   </Row>`).join('')}
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Economics">
+  <Table>
+   <Row ss:StyleID="Header">
+    <Cell><Data ss:Type="String">Год</Data></Cell>
+    <Cell><Data ss:Type="String">Закупки [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">Бронирование [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">Хранение [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">OPEX ZBO [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">OPEX ISRU [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">CAPEX [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">Всего затрат [млн]</Data></Cell>
+    <Cell><Data ss:Type="String">NPV затрат [млн]</Data></Cell>
+   </Row>
+   ${yearly_economics.map((e) => `
+   <Row>
+    <Cell><Data ss:Type="Number">${e.year}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.procurement_cost.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.reservation_cost.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.storage_holding_cost.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.zbo_fixed_opex.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.isru_fixed_opex.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.total_capex.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.total_expenditure.toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="Number"><Data ss:Type="Number">${e.discounted_expenditure.toFixed(2)}</Data></Cell>
+   </Row>`).join('')}
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Constraints_Log">
+  <Table>
+   <Row ss:StyleID="Header">
+    <Cell><Data ss:Type="String">Код правила</Data></Cell>
+    <Cell><Data ss:Type="String">Год</Data></Cell>
+    <Cell><Data ss:Type="String">Диагностическое сообщение</Data></Cell>
+   </Row>
+   ${violations.length === 0 ? `
+   <Row>
+    <Cell><Data ss:Type="String">ALL_CONSTRAINTS_OK</Data></Cell>
+    <Cell><Data ss:Type="String">-</Data></Cell>
+    <Cell><Data ss:Type="String">Все ограничения кейса соблюдены</Data></Cell>
+   </Row>` : violations.map((v) => `
+   <Row>
+    <Cell><Data ss:Type="String">${escapeXml(v.rule_code)}</Data></Cell>
+    <Cell><Data ss:Type="String">${v.year || '-'}</Data></Cell>
+    <Cell><Data ss:Type="String">${escapeXml(v.message)}</Data></Cell>
+   </Row>`).join('')}
+  </Table>
+ </Worksheet>
+</Workbook>`;
+}
+
+function downloadClientSideReport(
+  scenarioType: ScenarioType,
+  investments: InvestmentsState,
+  channelPlans: Record<number, Record<string, ChannelPlan>>,
+  format: 'xlsx' | 'csv',
+) {
+  const sim = runClientFallbackSimulation(scenarioType, investments, channelPlans, 0.08);
+  const { summary_kpi, yearly_balance, yearly_economics, violations } = sim;
+
+  if (format === 'csv') {
+    let csv = '\uFEFF';
+    csv += '=== СВОДНЫЕ ПОКАЗАТЕЛИ (SUMMARY KPI) ===\r\n';
+    csv += 'Параметр,Значение,Единица\r\n';
+    csv += `Сценарий,${scenarioType},-\r\n`;
+    csv += `Исполнимость плана,${summary_kpi.is_feasible ? 'Исполним' : 'Нарушен'},-\r\n`;
+    csv += `Совокупные затраты LCC,${summary_kpi.total_cost_m_cu},млн у.е.\r\n`;
+    csv += `NPV затрат (r=8%),${summary_kpi.npv_cost_m_cu},млн у.е.\r\n`;
+    csv += `Общий спрос,${summary_kpi.total_demand_tons},т\r\n`;
+    csv += `Обслуженный спрос,${summary_kpi.total_served_demand_tons},т\r\n`;
+    csv += `Суммарный дефицит,${summary_kpi.total_deficit_tons},т\r\n`;
+    csv += `Средний SLA общий,${(summary_kpi.average_service_level_total * 100).toFixed(2)},%\r\n`;
+    csv += `Средний SLA критический,${(summary_kpi.average_service_level_critical * 100).toFixed(2)},%\r\n`;
+    csv += `Суммарный CAPEX,${summary_kpi.total_capex_m_cu},млн у.е.\r\n`;
+    csv += `Потери оборота,${summary_kpi.total_losses_tons},т\r\n\r\n`;
+
+    csv += '=== МАТЕРИАЛЬНЫЙ БАЛАНС (MATERIAL BALANCE) ===\r\n';
+    csv += 'Год,Спрос общий,Спрос крит,Earth-Core,Earth-Flex,Earth-New,Lunar-ISRU,Emergency,Потери,Отпущено,Остаток,Емкость,Резерв 45д,Дефицит,SLA\r\n';
+    for (const b of yearly_balance) {
+      csv += `${b.year},${b.demand_total},${b.demand_critical},${b.channel_deliveries['Earth-Core'] || 0},${b.channel_deliveries['Earth-Flex'] || 0},${b.channel_deliveries['Earth-New'] || 0},${b.channel_deliveries['Lunar-ISRU'] || 0},${b.channel_deliveries['Emergency'] || 0},${b.losses.toFixed(2)},${b.served_demand_total.toFixed(2)},${b.end_stock.toFixed(2)},${b.storage_capacity_max},${b.required_reserve_45d.toFixed(2)},${b.deficit_total.toFixed(2)},${(b.service_level_total * 100).toFixed(1)}%\r\n`;
+    }
+
+    csv += '\r\n=== СТРУКТУРА ЗАТРАТ LCC (ECONOMICS) ===\r\n';
+    csv += 'Год,Закупки,Бронирование,Хранение,OPEX ZBO,OPEX ISRU,CAPEX,Всего OPEX,Всего затраты,NPV затрат\r\n';
+    for (const e of yearly_economics) {
+      csv += `${e.year},${e.procurement_cost.toFixed(2)},${e.reservation_cost.toFixed(2)},${e.storage_holding_cost.toFixed(2)},${e.zbo_fixed_opex.toFixed(2)},${e.isru_fixed_opex.toFixed(2)},${e.total_capex.toFixed(2)},${e.total_opex.toFixed(2)},${e.total_expenditure.toFixed(2)},${e.discounted_expenditure.toFixed(2)}\r\n`;
+    }
+
+    csv += '\r\n=== ЖУРНАЛ ОГРАНИЧЕНИЙ (CONSTRAINTS AUDIT) ===\r\n';
+    csv += 'Код правила,Год,Сообщение\r\n';
+    if (violations.length === 0) {
+      csv += 'ALL_OK,-,Все ограничения кейса соблюдены\r\n';
+    } else {
+      for (const v of violations) {
+        csv += `${v.rule_code},${v.year || '-'},"${v.message.replace(/"/g, '""')}"\r\n`;
+      }
+    }
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    triggerBlobDownload(blob, 'fuel_depot_planning_report.csv');
+  } else {
+    const xml = generateExcelXmlWorkbook(sim, scenarioType);
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    triggerBlobDownload(blob, 'fuel_depot_planning_report.xls');
+  }
+}
 
 export async function runSimulationAPI(
   scenarioType: ScenarioType,
@@ -23,23 +279,25 @@ export async function runSimulationAPI(
     discount_rate: discountRate,
   };
 
-  try {
-    const res = await fetch(`${API_BASE}/simulate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+  // Try Vite proxy first, then direct backend
+  for (const base of [API_BASE, DIRECT_BACKEND_BASE]) {
+    try {
+      const res = await fetch(`${base}/simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || 'Ошибка расчёта симуляции');
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Continue to next endpoint or fallback
     }
-
-    return await res.json();
-  } catch (error) {
-    console.warn('Backend API connection failed, running client-side fallback simulation engine...', error);
-    return runClientFallbackSimulation(scenarioType, investments, channelPlans, discountRate);
   }
+
+  // Fallback to client simulation engine
+  return runClientFallbackSimulation(scenarioType, investments, channelPlans, discountRate);
 }
 
 export async function downloadReport(
@@ -55,26 +313,32 @@ export async function downloadReport(
     discount_rate: 0.08,
   };
 
-  const res = await fetch(`${API_BASE}/export/${format}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  // 1. Try server-side export first (Vite proxy, then direct backend)
+  for (const base of [API_BASE, DIRECT_BACKEND_BASE]) {
+    try {
+      const res = await fetch(`${base}/export/${format}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-  if (!res.ok) {
-    throw new Error('Ошибка выгрузки отчёта с сервера');
+      if (res.ok) {
+        const blob = await res.blob();
+        triggerBlobDownload(
+          blob,
+          format === 'xlsx' ? 'fuel_depot_planning_report.xlsx' : 'fuel_depot_csv_bundle.zip',
+        );
+        return;
+      }
+    } catch {
+      // Continue
+    }
   }
 
-  const blob = await res.blob();
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = format === 'xlsx' ? 'fuel_depot_planning_report.xlsx' : 'fuel_depot_csv_bundle.zip';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
+  // 2. Guaranteed instant client-side export fallback
+  downloadClientSideReport(scenarioType, investments, channelPlans, format);
 }
+
 
 // Client-side simulation fallback mirror (guarantees 100% functionality even offline)
 export function runClientFallbackSimulation(

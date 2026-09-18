@@ -164,11 +164,11 @@ export const App: React.FC = () => {
       await downloadReport(scenario, investments, channelPlans, format);
     } catch (e) {
       console.error('Export error:', e);
-      alert('Ошибка при генерации отчёта: убедитесь, что бэкенд FastAPI запущен.');
     } finally {
       setIsExporting(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-[#050507] text-white flex flex-col selection:bg-[#ccff00] selection:text-black font-sans">

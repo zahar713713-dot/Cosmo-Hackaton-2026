@@ -68,13 +68,22 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => onExport('xlsx')}
               disabled={isExporting}
-              className="px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-black uppercase tracking-wider shadow-lg shadow-white/10 transition flex items-center gap-2 active:scale-95 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-full bg-[#ccff00] hover:bg-[#b8e600] text-black text-xs font-black uppercase tracking-wider shadow-lg shadow-[#ccff00]/20 transition flex items-center gap-2 active:scale-95 disabled:opacity-50"
             >
               <FileSpreadsheet className="w-4 h-4 text-black" />
-              {isExporting ? 'Экспорт...' : 'FREE Экспорт XLSX'}
+              {isExporting ? 'Экспорт...' : 'Экспорт XLSX'}
+            </button>
+
+            <button
+              onClick={() => onExport('csv')}
+              disabled={isExporting}
+              className="px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider border border-zinc-700 transition flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+            >
+              CSV
             </button>
           </div>
         </div>
+
 
         {/* Scenario Pill Navigation Bar */}
         <div className="mt-4 pt-3 border-t border-zinc-850 flex items-center gap-2 overflow-x-auto pb-1">
