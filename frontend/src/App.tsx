@@ -112,6 +112,8 @@ export const App: React.FC = () => {
     fetchOptimizationAlgorithms().then((algos) => {
       setAlgorithmsList(algos);
     });
+    // Immediately calculate initial plan dynamically via backend
+    handleSelectAlgorithm('nasa_milp');
   }, []);
 
   const handleSelectAlgorithm = async (algo: OptimizerAlgorithmType) => {
@@ -160,12 +162,20 @@ export const App: React.FC = () => {
       // 2. Parallel Stress calculation for comparative charts
       const stressResult = await runSimulationAPI('stress', investments, channelPlans, discountRate);
       setStressSimulationResult(stressResult);
+
+      // 3. Dynamically compute real savings vs regulatory baseline
+      const regRes = await runSimulationAPI('baseline', investments, createDefaultChannelPlans(activeYears), discountRate);
+      if (regRes && regRes.summary_kpi.npv_cost_m_cu > 0 && mainResult) {
+        const delta = regRes.summary_kpi.npv_cost_m_cu - mainResult.summary_kpi.npv_cost_m_cu;
+        const pct = Math.max(0, Math.round((delta / regRes.summary_kpi.npv_cost_m_cu) * 1000) / 10);
+        setSavingsPct(pct);
+      }
     } catch (e) {
       console.error('Calculation failure:', e);
     } finally {
       setIsCalculating(false);
     }
-  }, [scenario, investments, channelPlans, discountRate]);
+  }, [scenario, investments, channelPlans, discountRate, activeYears]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
