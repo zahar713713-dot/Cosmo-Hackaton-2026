@@ -60,10 +60,10 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
         <span className="text-[11px] text-neutral-500 font-mono hidden sm:inline">&lt;критерий 9: инвестиции&gt;</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
         {/* 1. ZBO Modernization */}
         <div
-          className={`p-5 rounded-2xl border transition-all flex flex-col justify-between ${
+          className={`h-full min-h-[220px] p-5 rounded-2xl border transition-all flex flex-col justify-between ${
             investments.zbo_year !== null
               ? 'bg-[#0f110c] border-[#ccff00]/60 shadow-lg shadow-[#ccff00]/5'
               : 'bg-[#0c0c0e] border-neutral-800 opacity-70'
@@ -71,7 +71,7 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
         >
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] text-neutral-500 font-mono">&lt;gate 01 // хранилище&gt;</span>
+              <span className="text-[10px] text-neutral-500 font-mono">&lt;шлюз 01 // хранилище&gt;</span>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -89,7 +89,7 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
               </div>
               <div>
                 <h3 className="text-sm font-black uppercase tracking-wider text-white">ZBO-МОДЕРНИЗАЦИЯ</h3>
-                <span className="text-[10px] text-[#ccff00] font-mono">CAPEX: 180M // OPEX: +12M/ГОД</span>
+                <span className="text-[10px] text-[#ccff00] font-mono">CAPEX: 180 млн // OPEX: +12 млн/год</span>
               </div>
             </div>
 
@@ -99,11 +99,11 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
             </p>
           </div>
 
-          {investments.zbo_year !== null && (
-            <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-xs">
-              <span className="text-neutral-400 flex items-center gap-1.5 font-mono">
-                <Calendar className="w-3.5 h-3.5 text-[#ccff00]" /> Год ввода:
-              </span>
+          <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-xs font-mono">
+            <span className="text-neutral-500 flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-[#ccff00]" /> Год ввода:
+            </span>
+            {investments.zbo_year !== null ? (
               <select
                 value={investments.zbo_year}
                 onChange={(e) => setZboYear(Number(e.target.value))}
@@ -115,13 +115,15 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
                   </option>
                 ))}
               </select>
-            </div>
-          )}
+            ) : (
+              <span className="text-neutral-600 font-bold">НЕ ЗАПЛАНИРОВАН</span>
+            )}
+          </div>
         </div>
 
         {/* 2. Lunar-ISRU Pilot */}
         <div
-          className={`p-5 rounded-2xl border transition-all flex flex-col justify-between ${
+          className={`h-full min-h-[220px] p-5 rounded-2xl border transition-all flex flex-col justify-between ${
             investments.isru_enabled
               ? 'bg-[#0e0c14] border-purple-500/60 shadow-lg shadow-purple-950/20'
               : 'bg-[#0c0c0e] border-neutral-800 opacity-70'
@@ -129,7 +131,7 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
         >
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] text-neutral-500 font-mono">&lt;gate 02 // лунная база&gt;</span>
+              <span className="text-[10px] text-neutral-500 font-mono">&lt;шлюз 02 // лунная база&gt;</span>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -146,8 +148,8 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
                 <Moon className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-black uppercase tracking-wider text-white">LUNAR-ISRU PILOT</h3>
-                <span className="text-[10px] text-purple-400 font-mono">CAPEX: 1 250M // ВВОД С 2038 Г.</span>
+                <h3 className="text-sm font-black uppercase tracking-wider text-white">LUNAR-ISRU (ЛУНА)</h3>
+                <span className="text-[10px] text-purple-400 font-mono">CAPEX: 1 250 млн // Ввод с 2038 г.</span>
               </div>
             </div>
 
@@ -159,13 +161,15 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
 
           <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-xs font-mono">
             <span className="text-neutral-500">График траншей:</span>
-            <span className="text-purple-300 font-bold">250 (35) + 500 (36) + 500 (37)</span>
+            <span className={investments.isru_enabled ? 'text-purple-300 font-bold' : 'text-neutral-600 font-bold'}>
+              {investments.isru_enabled ? '250 (35) + 500 (36) + 500 (37)' : 'НЕ ФИНАНСИРУЕТСЯ'}
+            </span>
           </div>
         </div>
 
         {/* 3. Earth-New Option */}
         <div
-          className={`p-5 rounded-2xl border transition-all flex flex-col justify-between ${
+          className={`h-full min-h-[220px] p-5 rounded-2xl border transition-all flex flex-col justify-between ${
             investments.earth_new_enabled
               ? 'bg-[#0a110d] border-emerald-500/60 shadow-lg shadow-emerald-950/20'
               : 'bg-[#0c0c0e] border-neutral-800 opacity-70'
@@ -173,7 +177,7 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
         >
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] text-neutral-500 font-mono">&lt;gate 03 // поставщик с&gt;</span>
+              <span className="text-[10px] text-neutral-500 font-mono">&lt;шлюз 03 // поставщик C&gt;</span>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -191,7 +195,7 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
               </div>
               <div>
                 <h3 className="text-sm font-black uppercase tracking-wider text-white">EARTH-NEW (ОПЦИОН)</h3>
-                <span className="text-[10px] text-emerald-400 font-mono">90M ОПЦИОН + 270M ВВОД = 360M</span>
+                <span className="text-[10px] text-emerald-400 font-mono">90 млн опцион + 270 млн ввод = 360 млн</span>
               </div>
             </div>
 
@@ -202,7 +206,7 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
           </div>
 
           <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-xs font-mono">
-            <span className="text-neutral-500">Статус канала:</span>
+            <span className="text-neutral-500">Статус контракта:</span>
             <span className={investments.earth_new_enabled ? 'text-emerald-400 font-bold' : 'text-neutral-600'}>
               {investments.earth_new_enabled ? 'АКТИВЕН С 2038 ГОДА' : 'НЕ ЗАКОНТРАКТОВАН'}
             </span>
@@ -212,4 +216,5 @@ export const InvestmentControls: React.FC<InvestmentControlsProps> = ({ investme
     </section>
   );
 };
+
 

@@ -76,7 +76,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
     },
     {
       id: 'Emergency',
-      name: 'EMERGENCY SPOT',
+      name: 'EMERGENCY',
       code: 'КАНАЛ E',
       sub: 'Аварийный экспресс-канал // Срочные поставки',
       maxCap: 80.0,
@@ -133,7 +133,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
               ГОДОВОЕ ПЛАНИРОВАНИЕ ЗАКУПОК И БРОНИРОВАНИЯ
             </h2>
             <p className="text-xs text-neutral-400 font-mono">
-              Оперативный выбор отбора КРТ и резервирования по 5 каналам доставки
+              Оперативный выбор отбора топлива и резервирования по 5 каналам доставки
             </p>
           </div>
         </div>
@@ -158,45 +158,45 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
 
       {/* Selected Year Overview Strip */}
       {currentBalance && (
-        <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-3 p-4 rounded-xl bg-[#0f0f12] border border-neutral-800 text-xs font-mono">
-          <div>
+        <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-3 p-3.5 rounded-2xl bg-[#0f0f12] border border-neutral-800 text-xs font-mono">
+          <div className="bg-[#070709] border border-neutral-800/80 rounded-xl p-3 text-center flex flex-col items-center justify-between">
             <span className="text-neutral-500 text-[10px] uppercase">&lt;спрос года&gt;</span>
-            <div className="text-lg font-black text-white mt-0.5">
+            <div className="text-lg font-black text-white my-1">
               {currentBalance.demand_total.toFixed(1)} <span className="text-xs font-normal text-neutral-400">Т</span>
             </div>
-            <span className="text-[10px] text-neutral-500">Крит: {currentBalance.demand_critical.toFixed(1)} т</span>
+            <span className="text-[10px] text-neutral-400">Критический: {currentBalance.demand_critical.toFixed(1)} т</span>
           </div>
 
-          <div>
+          <div className="bg-[#070709] border border-neutral-800/80 rounded-xl p-3 text-center flex flex-col items-center justify-between">
             <span className="text-neutral-500 text-[10px] uppercase">&lt;заказ / потери&gt;</span>
-            <div className="text-lg font-black text-[#ccff00] mt-0.5">
+            <div className="text-lg font-black text-[#ccff00] my-1">
               {currentBalance.gross_delivery.toFixed(1)} <span className="text-xs font-normal text-neutral-400">Т</span>
             </div>
-            <span className="text-[10px] text-neutral-500">Потери: {currentBalance.losses.toFixed(1)} т</span>
+            <span className="text-[10px] text-neutral-400">Потери: {currentBalance.losses.toFixed(1)} т</span>
           </div>
 
-          <div>
+          <div className="bg-[#070709] border border-neutral-800/80 rounded-xl p-3 text-center flex flex-col items-center justify-between">
             <span className="text-neutral-500 text-[10px] uppercase">&lt;остаток на конец&gt;</span>
             <div
-              className={`text-lg font-black mt-0.5 ${
+              className={`text-lg font-black my-1 ${
                 currentBalance.is_storage_overflow ? 'text-[#ff2a5f]' : 'text-white'
               }`}
             >
               {currentBalance.end_stock.toFixed(1)} <span className="text-xs font-normal text-neutral-400">Т</span>
             </div>
-            <span className="text-[10px] text-neutral-500">Вместимость: {currentBalance.storage_capacity_max} т</span>
+            <span className="text-[10px] text-neutral-400">Вместимость: {currentBalance.storage_capacity_max} т</span>
           </div>
 
-          <div>
+          <div className="bg-[#070709] border border-neutral-800/80 rounded-xl p-3 text-center flex flex-col items-center justify-between">
             <span className="text-neutral-500 text-[10px] uppercase">&lt;уровень сервиса&gt;</span>
             <div
-              className={`text-lg font-black mt-0.5 ${
+              className={`text-lg font-black my-1 ${
                 currentBalance.deficit_total > 0 ? 'text-[#ff2a5f] animate-pulse' : 'text-[#ccff00]'
               }`}
             >
               {(currentBalance.service_level_total * 100).toFixed(1)}%
             </div>
-            <span className="text-[10px] text-neutral-500">
+            <span className="text-[10px] text-neutral-400">
               {currentBalance.deficit_total > 0 ? `Дефицит: ${currentBalance.deficit_total.toFixed(1)} т` : 'Дефицит: 0 т'}
             </span>
           </div>

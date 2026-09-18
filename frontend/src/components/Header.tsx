@@ -25,16 +25,17 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Top Micro-labels matching reference */}
         <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 mb-3 border-b border-zinc-850 pb-2">
           <div className="flex items-center gap-4">
-            <span className="text-[#ccff00]">&lt;orbital_depot&gt;</span>
+            <span className="text-[#ccff00]">&lt;топливный_узел&gt;</span>
             <span>Цислунарная транспортная система</span>
-            <span className="hidden sm:inline">&lt;horizons: 2035–2040&gt;</span>
+            <span className="hidden sm:inline">&lt;горизонт: 2035–2040&gt;</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full border border-[#ccff00]/60 text-[#ccff00] font-mono text-[10px] tracking-wider uppercase">
-              sys: otu-1 // active
+              узел: ОТУ-1 // АКТИВЕН
             </span>
           </div>
         </div>
+
 
         {/* Hero Title row matching ANCHO WEB SCHOOL reference */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">

@@ -184,99 +184,108 @@ export const App: React.FC = () => {
 
       {/* Main Operator Console */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
-        {/* KPI Summary Block (Reference Style: 1 Lime Accent Card + High Impact Metric Cards) */}
+        {/* KPI Summary Block (Symmetric Cyber-Brutalist Grid) */}
         {simulationResult && (
-          <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
-            {/* Card 1: Electric Lime Accent Card */}
-            <div className="p-4 rounded-2xl bg-[#ccff00] text-black border border-[#ccff00] flex flex-col justify-between shadow-lg shadow-[#ccff00]/10">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-black/75 font-mono">
-                  &lt;статус узла&gt;
-                </span>
-                <div className="text-sm font-black uppercase tracking-tight mt-1 leading-snug">
-                  {simulationResult.summary_kpi.is_feasible ? 'ПЛАН ИСПОЛНИМ' : 'НАРУШЕНИЕ ЛИМИТОВ'}
+          <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 items-stretch">
+            {/* Карточка 1: Статус узла (Лаймовый акцент) */}
+            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#ccff00] text-black border border-[#ccff00] flex flex-col justify-between items-center text-center shadow-lg shadow-[#ccff00]/10">
+              <span className="text-[10px] font-black uppercase tracking-wider text-black/80 font-mono">
+                &lt;статус узла&gt;
+              </span>
+              <div className="my-auto py-1">
+                <div className="text-sm sm:text-base font-black uppercase tracking-tight leading-tight">
+                  {simulationResult.summary_kpi.is_feasible ? 'ПЛАН ИСПОЛНИМ' : 'НАРУШЕНЫ ЛИМИТЫ'}
+                </div>
+                <div className="text-xs font-black font-mono mt-1 text-black/90">
+                  КРИТ. SLA: {(simulationResult.summary_kpi.average_service_level_critical * 100).toFixed(1)}%
                 </div>
               </div>
-              <div className="mt-3 pt-2 border-t border-black/20">
-                <div className="text-xs font-black font-mono">
-                  SLA: {(simulationResult.summary_kpi.average_service_level_critical * 100).toFixed(1)}%
-                </div>
-                <div className="text-[10px] font-bold text-black/75 font-mono">
-                  {simulationResult.summary_kpi.is_feasible ? 'Критерии 19–20 OK' : 'Требует ребаланса'}
-                </div>
+              <div className="text-[10px] font-bold text-black/80 font-mono pt-1.5 border-t border-black/20 w-full">
+                {simulationResult.summary_kpi.is_feasible ? 'КРИТЕРИИ СОБЛЮДЕНЫ' : 'ТРЕБУЕТСЯ КОРРЕКЦИЯ'}
               </div>
             </div>
 
-            {/* Card 2: LCC Cost */}
-            <div className="p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between hover:border-neutral-700 transition">
-              <div>
-                <span className="text-[10px] text-neutral-500 font-mono uppercase">&lt;совокупные затраты lcc&gt;</span>
-                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight mt-1">
+            {/* Карточка 2: Совокупные затраты LCC */}
+            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+                &lt;затраты lcc&gt;
+              </span>
+              <div className="my-auto py-1">
+                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
                   {simulationResult.summary_kpi.total_cost_m_cu.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="mt-2 text-[10px] text-neutral-400 font-mono uppercase">
+              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
                 МЛН У.Е. // OPEX + CAPEX
               </div>
             </div>
 
-            {/* Card 3: NPV Cost */}
-            <div className="p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between hover:border-neutral-700 transition">
-              <div>
-                <span className="text-[10px] text-neutral-500 font-mono uppercase">&lt;npv затрат (r=8%)&gt;</span>
-                <div className="text-2xl lg:text-3xl font-black text-[#ccff00] font-mono tracking-tight mt-1">
+            {/* Карточка 3: NPV затрат */}
+            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+                &lt;npv затрат (r=8%)&gt;
+              </span>
+              <div className="my-auto py-1">
+                <div className="text-2xl lg:text-3xl font-black text-[#ccff00] font-mono tracking-tight">
                   {simulationResult.summary_kpi.npv_cost_m_cu.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="mt-2 text-[10px] text-neutral-400 font-mono uppercase">
-                МЛН У.Е. // ДИСКОНТ. СТОИМОСТЬ
+              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
+                МЛН У.Е. // ДИСКОНТИРОВАНО
               </div>
             </div>
 
-            {/* Card 4: Demand Served */}
-            <div className="p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between hover:border-neutral-700 transition">
-              <div>
-                <span className="text-[10px] text-neutral-500 font-mono uppercase">&lt;обслуженный спрос&gt;</span>
-                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight mt-1">
+            {/* Карточка 4: Обслуженный спрос */}
+            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+                &lt;обслуженный спрос&gt;
+              </span>
+              <div className="my-auto py-1">
+                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
                   {simulationResult.summary_kpi.total_served_demand_tons.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="mt-2 text-[10px] text-neutral-400 font-mono uppercase">
-                Т КРТ ИЗ {simulationResult.summary_kpi.total_demand_tons.toLocaleString('ru-RU')} Т
+              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
+                ТОНН ИЗ {simulationResult.summary_kpi.total_demand_tons.toLocaleString('ru-RU')} Т
               </div>
             </div>
 
-            {/* Card 5: Deficit */}
-            <div className="p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between hover:border-neutral-700 transition">
-              <div>
-                <span className="text-[10px] text-neutral-500 font-mono uppercase">&lt;суммарный дефицит&gt;</span>
+            {/* Карточка 5: Суммарный дефицит */}
+            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+                &lt;суммарный дефицит&gt;
+              </span>
+              <div className="my-auto py-1">
                 <div
-                  className={`text-2xl lg:text-3xl font-black font-mono tracking-tight mt-1 ${
+                  className={`text-2xl lg:text-3xl font-black font-mono tracking-tight ${
                     simulationResult.summary_kpi.total_deficit_tons > 0 ? 'text-[#ff2a5f] animate-pulse' : 'text-white'
                   }`}
                 >
                   {simulationResult.summary_kpi.total_deficit_tons.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="mt-2 text-[10px] text-neutral-400 font-mono uppercase">
-                Т // ОБЩИЙ SLA {(simulationResult.summary_kpi.average_service_level_total * 100).toFixed(1)}%
+              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
+                ТОНН // ОБЩИЙ SLA {(simulationResult.summary_kpi.average_service_level_total * 100).toFixed(1)}%
               </div>
             </div>
 
-            {/* Card 6: Losses */}
-            <div className="p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between hover:border-neutral-700 transition">
-              <div>
-                <span className="text-[10px] text-neutral-500 font-mono uppercase">&lt;потери оборота&gt;</span>
-                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight mt-1">
+            {/* Карточка 6: Потери оборота */}
+            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+                &lt;потери оборота&gt;
+              </span>
+              <div className="my-auto py-1">
+                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
                   {simulationResult.summary_kpi.total_losses_tons.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="mt-2 text-[10px] text-neutral-400 font-mono uppercase">
-                Т // УДЕЛ: {simulationResult.summary_kpi.cost_per_ton_served_m_cu.toFixed(2)} М/Т
+              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
+                ТОНН // ХРАНЕНИЕ И СБРОС
               </div>
             </div>
           </div>
         )}
+
 
         {/* 1. Constraint Alert Bar */}
         <ConstraintAlertBar simulation={simulationResult} />

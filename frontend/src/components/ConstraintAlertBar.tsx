@@ -27,7 +27,7 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
     {
       tag: '<крит. спрос>',
       title: 'КРИТИЧЕСКИЙ SLA',
-      rule: '≥ 99.0%',
+      rule: 'Норма: ≥ 99.0%',
       status: critViolations.length === 0,
       actual: `${(summary_kpi.average_service_level_critical * 100).toFixed(1)}%`,
       violation: critViolations[0],
@@ -35,7 +35,7 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
     {
       tag: '<общий спрос>',
       title: 'ОБЩИЙ SLA',
-      rule: '≥ 97.0%',
+      rule: 'Норма: ≥ 97.0%',
       status: totViolations.length === 0,
       actual: `${(summary_kpi.average_service_level_total * 100).toFixed(1)}%`,
       violation: totViolations[0],
@@ -43,23 +43,23 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
     {
       tag: '<инвест этап 1>',
       title: 'CAPEX ДО 2037',
-      rule: '≤ 1 800 МЛН',
+      rule: 'Лимит: ≤ 1 800 млн',
       status: capex37Violations.length === 0,
-      actual: `${summary_kpi.total_capex_m_cu.toFixed(1)}M`,
+      actual: `${summary_kpi.total_capex_m_cu.toFixed(0)} млн`,
       violation: capex37Violations[0],
     },
     {
       tag: '<полный бюджет>',
       title: 'СУММАРНЫЙ CAPEX',
-      rule: '≤ 2 800 МЛН',
+      rule: 'Лимит: ≤ 2 800 млн',
       status: capexTotViolations.length === 0,
-      actual: `${summary_kpi.total_capex_m_cu.toFixed(1)}M`,
+      actual: `${summary_kpi.total_capex_m_cu.toFixed(0)} млн`,
       violation: capexTotViolations[0],
     },
     {
       tag: '<буферный запас>',
       title: 'РЕЗЕРВ 45 ДНЕЙ',
-      rule: 'ПОЛНЫЙ БУФЕР',
+      rule: 'Страховой буфер',
       status: reserveViolations.length === 0,
       actual: reserveViolations.length === 0 ? 'НОРМА' : 'ДЕФИЦИТ',
       violation: reserveViolations[0],
@@ -67,9 +67,9 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
     {
       tag: '<емкость оту>',
       title: 'ОБЪЕМ БАКОВ',
-      rule: '70Т / 120Т (ZBO)',
+      rule: '70 т / 120 т (ZBO)',
       status: storageViolations.length === 0,
-      actual: storageViolations.length === 0 ? 'НОРМА' : 'ПЕРЕПОЛНЕНИЕ',
+      actual: storageViolations.length === 0 ? 'НОРМА' : 'ПЕРЕПОЛНЕНО',
       violation: storageViolations[0],
     },
   ];
@@ -104,50 +104,52 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
         </button>
       </div>
 
-      {/* 6 Metric Grid Blocks */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* 6 Metric Grid Blocks (Symmetrical & Centered) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-stretch">
         {cards.map((c, i) => (
           <div
             key={i}
-            className={`p-4 rounded-xl border transition-all flex flex-col justify-between relative ${
+            className={`h-full min-h-[140px] p-4 rounded-xl border transition-all flex flex-col items-center justify-between text-center relative ${
               c.status
                 ? 'bg-[#0f0f12] border-neutral-800/90 hover:border-neutral-700'
                 : 'bg-[#1a080d] border-[#ff2a5f]/60 text-white shadow-lg shadow-[#ff2a5f]/10'
             }`}
           >
-            <div>
-              <div className="flex items-center justify-between gap-1 mb-1">
-                <span className="text-[10px] text-neutral-500 font-mono">{c.tag}</span>
-                {c.status ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#ccff00] shrink-0" />
-                ) : (
-                  <AlertTriangle className="w-3.5 h-3.5 text-[#ff2a5f] shrink-0 animate-bounce" />
-                )}
-              </div>
-              <div className="text-[11px] font-black uppercase tracking-wider text-neutral-300 truncate">
-                {c.title}
-              </div>
+            <div className="w-full flex items-center justify-between mb-1">
+              <span className="text-[10px] text-neutral-500 font-mono">{c.tag}</span>
+              {c.status ? (
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#ccff00] shrink-0" />
+              ) : (
+                <AlertTriangle className="w-3.5 h-3.5 text-[#ff2a5f] shrink-0 animate-bounce" />
+              )}
             </div>
 
-            <div className="mt-3">
+            <div className="my-auto py-1">
+              <div className="text-[11px] font-black uppercase tracking-wider text-neutral-300">
+                {c.title}
+              </div>
               <div
-                className={`text-xl font-black font-mono tracking-tight ${
+                className={`text-xl sm:text-2xl font-black font-mono tracking-tight mt-1 ${
                   c.status ? 'text-white' : 'text-[#ff2a5f]'
                 }`}
               >
                 {c.actual}
               </div>
-              <div className="text-[10px] text-neutral-500 font-mono mt-0.5">{c.rule}</div>
+            </div>
+
+            <div className="w-full text-[10px] text-neutral-500 font-mono pt-1.5 border-t border-neutral-850">
+              {c.rule}
             </div>
 
             {!c.status && c.violation && (
-              <div className="mt-2 text-[10px] leading-tight text-rose-300 bg-rose-950/80 p-1.5 rounded border border-rose-800/80 font-mono">
+              <div className="mt-2 text-[10px] leading-tight text-rose-300 bg-rose-950/80 p-1.5 rounded border border-rose-800/80 font-mono w-full">
                 {c.violation.message}
               </div>
             )}
           </div>
         ))}
       </div>
+
 
       {/* Additional specific rule flags if violated */}
       {(emergencyViolations.length > 0 || stressLossViolations.length > 0) && (

@@ -65,11 +65,11 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
     return {
       year: b.year,
-      'NPV (Базовый)': baseEcon ? baseEcon.discounted_expenditure : 0,
-      'NPV (Стресс)': stressEcon ? stressEcon.discounted_expenditure : 0,
-      'Потери (Базовый)': b.losses,
-      'Потери (Стресс)': stressBal ? stressBal.losses : 0,
-      'Дефицит (Стресс)': stressBal ? stressBal.deficit_total : 0,
+      'NPV (Базовый план)': baseEcon ? baseEcon.discounted_expenditure : 0,
+      'NPV (Стресс-тест)': stressEcon ? stressEcon.discounted_expenditure : 0,
+      'Потери (Базовый план)': b.losses,
+      'Потери (Стресс-тест)': stressBal ? stressBal.losses : 0,
+      'Дефицит (Стресс-тест)': stressBal ? stressBal.deficit_total : 0,
     };
   });
 
@@ -207,7 +207,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
             <div>
               <span className="text-[10px] text-neutral-500 font-mono">&lt;график 04 // сопоставление стресс-теста&gt;</span>
               <h3 className="text-sm font-black uppercase tracking-wider text-white">
-                BASELINE VS ОБЯЗАТЕЛЬНЫЙ СТРЕСС-ТЕСТ
+                БАЗОВЫЙ ПЛАН VS ОБЯЗАТЕЛЬНЫЙ СТРЕСС-ТЕСТ
               </h3>
             </div>
           </div>
@@ -222,10 +222,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
               <YAxis stroke="#52525b" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
               <Tooltip contentStyle={customTooltipStyle} itemStyle={{ color: '#ffffff' }} />
               <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '8px', fontFamily: 'monospace' }} />
-              <Bar dataKey="NPV (Базовый)" fill="#ccff00" />
-              <Bar dataKey="NPV (Стресс)" fill="#ff2a5f" />
-              <Line type="monotone" dataKey="Потери (Стресс)" stroke="#ffb703" strokeWidth={2} />
-              <Line type="monotone" dataKey="Дефицит (Стресс)" stroke="#ffffff" strokeWidth={2.5} strokeDasharray="3 3" />
+              <Bar dataKey="NPV (Базовый план)" fill="#ccff00" />
+              <Bar dataKey="NPV (Стресс-тест)" fill="#ff2a5f" />
+              <Line type="monotone" dataKey="Потери (Стресс-тест)" stroke="#ffb703" strokeWidth={2} />
+              <Line type="monotone" dataKey="Дефицит (Стресс-тест)" stroke="#ffffff" strokeWidth={2.5} strokeDasharray="3 3" />
             </BarChart>
           </ResponsiveContainer>
         </div>
