@@ -20,39 +20,39 @@ export const Header: React.FC<HeaderProps> = ({
   isExporting,
 }) => {
   return (
-    <header className="bg-[#050507] border-b border-white/10 px-6 py-5 sticky top-0 z-50">
+    <header className="bg-[#050507] border-b border-white/10 px-4 sm:px-6 py-3.5 sm:py-5 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto">
         {/* Top Micro-labels matching reference */}
-        <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 mb-3 border-b border-zinc-850 pb-2">
-          <div className="flex items-center gap-4">
-            <span className="text-[#ccff00]">&lt;топливный_узел&gt;</span>
-            <span>Цислунарная транспортная система</span>
-            <span className="hidden sm:inline">&lt;горизонт: 2035–2040&gt;</span>
+        <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-zinc-400 mb-2.5 sm:mb-3 border-b border-zinc-850 pb-2">
+          <div className="flex items-center gap-2.5 sm:gap-4">
+            <span className="text-[#ccff00] font-bold">&lt;топливный_узел&gt;</span>
+            <span className="truncate max-w-[170px] sm:max-w-none">Цислунарная транспортная система</span>
+            <span className="hidden md:inline">&lt;горизонт: 2035–2040&gt;</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full border border-[#ccff00]/60 text-[#ccff00] font-mono text-[10px] tracking-wider uppercase">
-              узел: ОТУ-1 // АКТИВЕН
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="px-2.5 py-0.5 rounded-full border border-[#ccff00]/60 text-[#ccff00] font-mono text-[9px] sm:text-[10px] tracking-wider uppercase font-bold">
+              ОТУ-1 // АКТИВЕН
             </span>
           </div>
         </div>
 
 
         {/* Hero Title row matching ANCHO WEB SCHOOL reference */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white leading-none">
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white leading-none">
               ТОПЛИВНЫЙ КОСМОКОНТУР <span className="text-[#ccff00]">(2035)</span>
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 font-medium max-w-xl">
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 sm:mt-1.5 font-medium max-w-xl">
               Система оперативного планирования поставок, материального баланса, инвестиций и стресс-тестов цислунарного узла
             </p>
           </div>
 
           {/* Action Buttons styled as rounded pills from the reference */}
-          <div className="flex items-center flex-wrap gap-2.5">
+          <div className="flex items-center flex-wrap gap-2 sm:gap-2.5">
             <button
               onClick={onReset}
-              className="px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold uppercase tracking-wider border border-zinc-700 transition flex items-center gap-1.5"
+              className="px-3.5 sm:px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold uppercase tracking-wider border border-zinc-700 transition flex items-center gap-1.5 active:scale-95"
             >
               <RotateCcw className="w-3.5 h-3.5 text-[#ccff00]" />
               Сброс ТЗ
@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={onOpenCustomization}
-              className="px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider border border-[#ccff00]/40 hover:border-[#ccff00] transition flex items-center gap-1.5"
+              className="px-3.5 sm:px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider border border-[#ccff00]/40 hover:border-[#ccff00] transition flex items-center gap-1.5 active:scale-95"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#ccff00]" />
               Кастомизация (+2045)
@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => onExport('xlsx')}
               disabled={isExporting}
-              className="px-5 py-2.5 rounded-full bg-[#ccff00] hover:bg-[#b8e600] text-black text-xs font-black uppercase tracking-wider shadow-lg shadow-[#ccff00]/20 transition flex items-center gap-2 active:scale-95 disabled:opacity-50"
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#ccff00] hover:bg-[#b8e600] text-black text-xs font-black uppercase tracking-wider shadow-lg shadow-[#ccff00]/20 transition flex items-center gap-2 active:scale-95 disabled:opacity-50"
             >
               <FileSpreadsheet className="w-4 h-4 text-black" />
               {isExporting ? 'Экспорт...' : 'Экспорт XLSX'}
@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => onExport('csv')}
               disabled={isExporting}
-              className="px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider border border-zinc-700 transition flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+              className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider border border-zinc-700 transition flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
             >
               CSV
             </button>
@@ -87,14 +87,14 @@ export const Header: React.FC<HeaderProps> = ({
 
 
         {/* Scenario Pill Navigation Bar */}
-        <div className="mt-4 pt-3 border-t border-zinc-850 flex items-center gap-2 overflow-x-auto pb-1">
-          <span className="text-[11px] font-mono uppercase text-zinc-400 tracking-wider mr-1">
+        <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-zinc-850 flex items-center gap-2 overflow-x-auto pb-1 touch-pan-x scrollbar-none">
+          <span className="text-[10px] sm:text-[11px] font-mono uppercase text-zinc-400 tracking-wider mr-1 shrink-0">
             Сценарии:
           </span>
 
           <button
             onClick={() => onSelectScenario('baseline')}
-            className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               currentScenario === 'baseline'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/25 ring-2 ring-[#ccff00]'
                 : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'
@@ -106,7 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={() => onSelectScenario('stress')}
-            className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               currentScenario === 'stress'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/25 ring-2 ring-[#ccff00]'
                 : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'
@@ -118,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={() => onSelectScenario('high_demand')}
-            className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               currentScenario === 'high_demand'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/25 ring-2 ring-[#ccff00]'
                 : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'
@@ -130,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={() => onSelectScenario('geopolitical')}
-            className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               currentScenario === 'geopolitical'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/25 ring-2 ring-[#ccff00]'
                 : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'

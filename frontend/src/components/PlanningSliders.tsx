@@ -139,12 +139,12 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
         </div>
 
         {/* Year Pills (Brutalist style) */}
-        <div className="flex items-center gap-1.5 p-1.5 bg-[#050507] rounded-full border border-neutral-800 overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1.5 p-1.5 bg-[#050507] rounded-full border border-neutral-800 overflow-x-auto max-w-full touch-pan-x scrollbar-none w-full sm:w-auto">
           {years.map((y) => (
             <button
               key={y}
               onClick={() => setSelectedYear(y)}
-              className={`px-3.5 py-1 rounded-full text-xs font-black font-mono transition-all uppercase ${
+              className={`px-3.5 py-1 rounded-full text-xs font-black font-mono transition-all uppercase whitespace-nowrap shrink-0 ${
                 selectedYear === y
                   ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                   : 'text-neutral-400 hover:text-white hover:bg-neutral-800/60'
@@ -158,7 +158,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
 
       {/* Selected Year Overview Strip */}
       {currentBalance && (
-        <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-3 p-3.5 rounded-2xl bg-[#0f0f12] border border-neutral-800 text-xs font-mono">
+        <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-2xl bg-[#0f0f12] border border-neutral-800 text-xs font-mono">
           <div className="bg-[#070709] border border-neutral-800/80 rounded-xl p-3 text-center flex flex-col items-center justify-between">
             <span className="text-neutral-500 text-[10px] uppercase">&lt;спрос года&gt;</span>
             <div className="text-lg font-black text-white my-1">
@@ -222,8 +222,8 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
               }`}
             >
               {/* Row Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2.5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 mb-3">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className={`text-[10px] font-black font-mono px-2.5 py-0.5 rounded-full border ${ch.badgeStyle}`}>
                     {ch.code}
                   </span>
@@ -231,19 +231,19 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                   <span className="text-xs text-neutral-400 font-medium hidden sm:inline">{ch.sub}</span>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs font-mono">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs font-mono">
                   <span className="text-neutral-400">
                     Тариф: <b className="text-white">{ch.varPrice}</b> млн/т
                   </span>
-                  <span className="text-neutral-500">|</span>
+                  <span className="text-neutral-600 hidden sm:inline">|</span>
                   <span className="text-neutral-400">
                     Бронь: <b className="text-white">{ch.resTariff}</b> млн/т
                   </span>
-                  <span className="text-neutral-500">|</span>
+                  <span className="text-neutral-600 hidden sm:inline">|</span>
                   <span className="text-neutral-400">
                     TOP: <b className="text-[#ccff00]">{ch.topRatio * 100}%</b>
                   </span>
-                  <span className="text-neutral-500">|</span>
+                  <span className="text-neutral-600 hidden sm:inline">|</span>
                   <span className="text-neutral-400 flex items-center gap-1">
                     <Clock className="w-3 h-3 text-neutral-500" /> {ch.leadTime}
                   </span>
@@ -307,7 +307,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                       step={1}
                       value={plan.target_order_volume}
                       onChange={(e) => updateOrder(ch.id, Number(e.target.value))}
-                      className="w-full accent-[#ccff00] cursor-pointer h-2 bg-neutral-800 rounded-lg"
+                      className="w-full accent-[#ccff00] cursor-pointer h-3.5 sm:h-2.5 bg-neutral-800 rounded-lg touch-manipulation my-1"
                     />
                     <div className="flex justify-between text-[10px] text-neutral-500 font-mono mt-1">
                       <span>0 т</span>
@@ -328,7 +328,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                       step={1}
                       value={plan.reserved_capacity}
                       onChange={(e) => updateReservation(ch.id, Number(e.target.value))}
-                      className="w-full accent-white cursor-pointer h-2 bg-neutral-800 rounded-lg"
+                      className="w-full accent-white cursor-pointer h-3.5 sm:h-2.5 bg-neutral-800 rounded-lg touch-manipulation my-1"
                     />
                     <div className="flex justify-between text-[10px] text-neutral-500 font-mono mt-1">
                       <span>Порог TOP: {topThreshold.toFixed(1)} т</span>

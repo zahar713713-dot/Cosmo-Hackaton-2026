@@ -165,10 +165,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
     <div className="mb-8 space-y-4">
       {/* Top Filter Tabs Toolbar */}
       <div className="bg-[#0a0a0c] p-2 rounded-2xl border border-neutral-800 shadow-xl flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full">
+        <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full touch-pan-x scrollbar-none">
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'all'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                 : 'bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -180,7 +180,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
           <button
             onClick={() => setActiveTab('balance')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'balance'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                 : 'bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -192,7 +192,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
           <button
             onClick={() => setActiveTab('inventory')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'inventory'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                 : 'bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -204,7 +204,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
           <button
             onClick={() => setActiveTab('economics')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'economics'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                 : 'bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -216,7 +216,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
           <button
             onClick={() => setActiveTab('stress')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'stress'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                 : 'bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -228,7 +228,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
           <button
             onClick={() => setActiveTab('mix')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'mix'
                 ? 'bg-[#ccff00] text-black shadow-md shadow-[#ccff00]/20'
                 : 'bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -480,7 +480,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
 
             <div className={`${isGrid ? 'h-72 sm:h-80' : 'h-96'} w-full`}>
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={comparisonData} margin={{ top: 10, right: -5, left: -15, bottom: 0 }}>
+                <ComposedChart data={comparisonData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="2 2" stroke="#1c1c1f" />
                   <XAxis dataKey="year" stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
 

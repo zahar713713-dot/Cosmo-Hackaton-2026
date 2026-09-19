@@ -26,11 +26,11 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-      <div className="bg-[#0c0c0e] border border-neutral-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-[#0c0c0e] border border-neutral-800 rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto my-auto">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800 transition"
+          className="absolute top-4 right-4 p-2 rounded-full bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800 transition"
         >
           <X className="w-4 h-4" />
         </button>

@@ -232,101 +232,101 @@ export const App: React.FC = () => {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
         {/* KPI Summary Block (Symmetric Cyber-Brutalist Grid) */}
         {simulationResult && (
-          <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 items-stretch">
+          <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5 items-stretch">
             {/* Карточка 1: Статус узла (Лаймовый акцент) */}
-            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#ccff00] text-black border border-[#ccff00] flex flex-col justify-between items-center text-center shadow-lg shadow-[#ccff00]/10">
-              <span className="text-[10px] font-black uppercase tracking-wider text-black/80 font-mono">
+            <div className="h-full min-h-[135px] sm:min-h-[148px] p-3 sm:p-4 rounded-2xl bg-[#ccff00] text-black border border-[#ccff00] flex flex-col justify-between items-center text-center shadow-lg shadow-[#ccff00]/10">
+              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-black/80 font-mono">
                 &lt;статус узла&gt;
               </span>
               <div className="my-auto py-1">
-                <div className="text-sm sm:text-base font-black uppercase tracking-tight leading-tight">
+                <div className="text-xs sm:text-base font-black uppercase tracking-tight leading-tight">
                   {simulationResult.summary_kpi.is_feasible ? 'ПЛАН ИСПОЛНИМ' : 'НАРУШЕНЫ ЛИМИТЫ'}
                 </div>
-                <div className="text-xs font-black font-mono mt-1 text-black/90">
+                <div className="text-[11px] sm:text-xs font-black font-mono mt-1 text-black/90">
                   КРИТ. SLA: {(simulationResult.summary_kpi.average_service_level_critical * 100).toFixed(1)}%
                 </div>
               </div>
-              <div className="text-[10px] font-bold text-black/80 font-mono pt-1.5 border-t border-black/20 w-full">
+              <div className="text-[9px] sm:text-[10px] font-bold text-black/80 font-mono pt-1.5 border-t border-black/20 w-full truncate">
                 {simulationResult.summary_kpi.is_feasible ? 'КРИТЕРИИ СОБЛЮДЕНЫ' : 'ТРЕБУЕТСЯ КОРРЕКЦИЯ'}
               </div>
             </div>
 
             {/* Карточка 2: Совокупные затраты LCC */}
-            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
-              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+            <div className="h-full min-h-[135px] sm:min-h-[148px] p-3 sm:p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
                 &lt;затраты lcc&gt;
               </span>
               <div className="my-auto py-1">
-                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
                   {simulationResult.summary_kpi.total_cost_m_cu.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
-                МЛН У.Е. // OPEX + CAPEX
+              <div className="text-[9px] sm:text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full truncate">
+                МЛН // OPEX + CAPEX
               </div>
             </div>
 
             {/* Карточка 3: NPV затрат */}
-            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
-              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+            <div className="h-full min-h-[135px] sm:min-h-[148px] p-3 sm:p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
                 &lt;npv затрат (r=8%)&gt;
               </span>
               <div className="my-auto py-1">
-                <div className="text-2xl lg:text-3xl font-black text-[#ccff00] font-mono tracking-tight">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-black text-[#ccff00] font-mono tracking-tight">
                   {simulationResult.summary_kpi.npv_cost_m_cu.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
-                МЛН У.Е. // ДИСКОНТИРОВАНО
+              <div className="text-[9px] sm:text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full truncate">
+                МЛН У.Е. // ДИСКОНТ.
               </div>
             </div>
 
             {/* Карточка 4: Обслуженный спрос */}
-            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
-              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+            <div className="h-full min-h-[135px] sm:min-h-[148px] p-3 sm:p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
                 &lt;обслуженный спрос&gt;
               </span>
               <div className="my-auto py-1">
-                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
                   {simulationResult.summary_kpi.total_served_demand_tons.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
+              <div className="text-[9px] sm:text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full truncate">
                 ТОНН ИЗ {simulationResult.summary_kpi.total_demand_tons.toLocaleString('ru-RU')} Т
               </div>
             </div>
 
             {/* Карточка 5: Суммарный дефицит */}
-            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
-              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+            <div className="h-full min-h-[135px] sm:min-h-[148px] p-3 sm:p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
                 &lt;суммарный дефицит&gt;
               </span>
               <div className="my-auto py-1">
                 <div
-                  className={`text-2xl lg:text-3xl font-black font-mono tracking-tight ${
+                  className={`text-xl sm:text-2xl lg:text-3xl font-black font-mono tracking-tight ${
                     simulationResult.summary_kpi.total_deficit_tons > 0 ? 'text-[#ff2a5f] animate-pulse' : 'text-white'
                   }`}
                 >
                   {simulationResult.summary_kpi.total_deficit_tons.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
-                ТОНН // ОБЩИЙ SLA {(simulationResult.summary_kpi.average_service_level_total * 100).toFixed(1)}%
+              <div className="text-[9px] sm:text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full truncate">
+                ТОНН // SLA {(simulationResult.summary_kpi.average_service_level_total * 100).toFixed(1)}%
               </div>
             </div>
 
             {/* Карточка 6: Потери оборота */}
-            <div className="h-full min-h-[148px] p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
-              <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
+            <div className="h-full min-h-[135px] sm:min-h-[148px] p-3 sm:p-4 rounded-2xl bg-[#0c0c0e] border border-neutral-800 flex flex-col justify-between items-center text-center hover:border-neutral-700 transition">
+              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono uppercase tracking-wide">
                 &lt;потери оборота&gt;
               </span>
               <div className="my-auto py-1">
-                <div className="text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-mono tracking-tight">
                   {simulationResult.summary_kpi.total_losses_tons.toLocaleString('ru-RU')}
                 </div>
               </div>
-              <div className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full">
-                ТОНН // ХРАНЕНИЕ И СБРОС
+              <div className="text-[9px] sm:text-[10px] text-neutral-400 font-mono uppercase tracking-wide pt-1.5 border-t border-neutral-850 w-full truncate">
+                ТОНН // ХРАНЕНИЕ
               </div>
             </div>
           </div>
