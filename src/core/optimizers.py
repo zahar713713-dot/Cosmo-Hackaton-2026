@@ -143,6 +143,10 @@ def _optimize_regulatory(
         isru_cap = min(120.0, rem) if (isru_enabled and y >= 2038) else 0.0
         rem = max(0.0, rem - isru_cap)
 
+        # Earth-New from 2038 if contracted
+        new_cap = min(130.0, rem) if (earth_new_enabled and y >= 2038 and rem > 0) else 0.0
+        rem = max(0.0, rem - new_cap)
+
         if rem > 0 and flex_cap + rem <= 110.0:
             flex_cap += rem
             rem = 0.0
@@ -164,8 +168,8 @@ def _optimize_regulatory(
             ),
             ChannelID.EARTH_NEW: ChannelOrder(
                 channel_id=ChannelID.EARTH_NEW,
-                reserved_capacity=0.0,
-                order_volume=0.0,
+                reserved_capacity=round(new_cap, 1),
+                order_volume=round(new_cap, 1),
             ),
             ChannelID.LUNAR_ISRU: ChannelOrder(
                 channel_id=ChannelID.LUNAR_ISRU,

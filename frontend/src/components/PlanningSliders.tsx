@@ -57,7 +57,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
       varPrice: 7.1,
       resTariff: 0.3,
       topRatio: 0.5,
-      isAvailable: investments.earth_new_enabled,
+      isAvailable: investments.earth_new_enabled && selectedYear >= 2038,
       leadTime: '18–24 мес.',
       badgeStyle: 'bg-emerald-950/60 border-emerald-500 text-emerald-400',
     },
@@ -251,9 +251,41 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
               </div>
 
               {!ch.isAvailable ? (
-                <div className="py-2 text-xs text-neutral-500 font-mono flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-neutral-600" />
-                  Канал недоступен в {selectedYear} году (требуются инвестиции или соблюдение сроков ввода).
+                <div className="py-2.5 px-3.5 rounded-xl bg-[#0e0e11] border border-neutral-800 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>
+                      {ch.id === 'Earth-New' && !investments.earth_new_enabled && (
+                        <>
+                          Канал C не законтрактован. Включите тумблер в карточке <b className="text-emerald-400">«EARTH-NEW (ОПЦИОН)»</b> в блоке инвестиций выше.
+                        </>
+                      )}
+                      {ch.id === 'Earth-New' && investments.earth_new_enabled && selectedYear < 2038 && (
+                        <>
+                          Канал C законтрактован (цикл создания 18–24 мес.). Поставки доступны <b className="text-white">с 2038 года</b>.
+                        </>
+                      )}
+                      {ch.id === 'Lunar-ISRU' && !investments.isru_enabled && (
+                        <>
+                          Лунная добыча отключена. Активируйте карточку <b className="text-purple-400">«LUNAR-ISRU»</b> в блоке инвестиций выше.
+                        </>
+                      )}
+                      {ch.id === 'Lunar-ISRU' && investments.isru_enabled && selectedYear < 2038 && (
+                        <>
+                          Развертывание лунной инфраструктуры (2035–2037). Доступ к топливу открывается <b className="text-white">с 2038 года</b>.
+                        </>
+                      )}
+                    </span>
+                  </div>
+                  {((ch.id === 'Earth-New' && investments.earth_new_enabled && selectedYear < 2038) ||
+                    (ch.id === 'Lunar-ISRU' && investments.isru_enabled && selectedYear < 2038)) && (
+                    <button
+                      onClick={() => setSelectedYear(2038)}
+                      className="text-[11px] font-bold text-black bg-[#ccff00] hover:bg-[#b3e600] px-3 py-1 rounded-full shrink-0 transition"
+                    >
+                      Перейти к 2038 году →
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
