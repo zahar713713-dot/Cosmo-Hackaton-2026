@@ -34,63 +34,60 @@ interface AnalyticsChartsProps {
 type TabType = 'all' | 'balance' | 'inventory' | 'economics' | 'stress' | 'mix';
 
 export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, stressSimulation }) => {
+  // ALL HOOKS MUST BE AT THE TOP (NO EARLY RETURNS BEFORE HOOKS)
   const [activeTab, setActiveTab] = useState<TabType>('all');
 
-  if (!simulation) return null;
-
-  const { yearly_balance, yearly_economics } = simulation;
+  const yearly_balance = simulation?.yearly_balance;
+  const yearly_economics = simulation?.yearly_economics;
 
   // 1. Data for Material Balance Stacked Bar & Lines
   const balanceChartData = useMemo(() => {
+    if (!yearly_balance) return [];
     return yearly_balance.map((b) => ({
       year: b.year,
-      'Earth-Core': Number((b.channel_deliveries['Earth-Core'] || 0).toFixed(2)),
-      'Earth-Flex': Number((b.channel_deliveries['Earth-Flex'] || 0).toFixed(2)),
-      'Earth-New': Number((b.channel_deliveries['Earth-New'] || 0).toFixed(2)),
-      'Lunar-ISRU': Number((b.channel_deliveries['Lunar-ISRU'] || 0).toFixed(2)),
-      Emergency: Number((b.channel_deliveries['Emergency'] || 0).toFixed(2)),
+      'Earth-Core': Number((b.channel_deliveries?.['Earth-Core'] || 0).toFixed(2)),
+      'Earth-Flex': Number((b.channel_deliveries?.['Earth-Flex'] || 0).toFixed(2)),
+      'Earth-New': Number((b.channel_deliveries?.['Earth-New'] || 0).toFixed(2)),
+      'Lunar-ISRU': Number((b.channel_deliveries?.['Lunar-ISRU'] || 0).toFixed(2)),
+      Emergency: Number((b.channel_deliveries?.['Emergency'] || 0).toFixed(2)),
       Дефицит: Number((b.deficit_total || 0).toFixed(2)),
       'Общий спрос': Number(b.demand_total.toFixed(2)),
       'Критический спрос': Number(b.demand_critical.toFixed(2)),
-      served: Number(b.served_demand_total.toFixed(2)),
     }));
   }, [yearly_balance]);
 
   // 2. Data for Inventory Trajectory Area Chart
   const inventoryChartData = useMemo(() => {
+    if (!yearly_balance) return [];
     return yearly_balance.map((b) => ({
       year: b.year,
       'Фактический остаток': Number(b.end_stock.toFixed(2)),
       '45-дневный резерв': Number(b.required_reserve_45d.toFixed(2)),
       'Вместимость баков': Number(b.storage_capacity_max.toFixed(2)),
-      'Буфер превышения': Number(Math.max(0, b.end_stock - b.required_reserve_45d).toFixed(2)),
     }));
   }, [yearly_balance]);
 
   // 3. Data for Cost Breakdown Stacked Bar
   const costChartData = useMemo(() => {
-    return yearly_economics.map((e) => {
-      const totalOpex = e.procurement_cost + e.reservation_cost + e.storage_holding_cost + e.zbo_fixed_opex + e.isru_fixed_opex;
-      const totalAnnual = totalOpex + e.total_capex;
-      return {
-        year: e.year,
-        Закупки: Number(e.procurement_cost.toFixed(2)),
-        Бронирование: Number(e.reservation_cost.toFixed(2)),
-        Хранение: Number(e.storage_holding_cost.toFixed(2)),
-        'OPEX ZBO/ISRU': Number((e.zbo_fixed_opex + e.isru_fixed_opex).toFixed(2)),
-        CAPEX: Number(e.total_capex.toFixed(2)),
-        'Итого за год': Number(totalAnnual.toFixed(2)),
-        'Дисконтированные (NPV)': Number(e.discounted_expenditure.toFixed(2)),
-      };
-    });
+    if (!yearly_economics) return [];
+    return yearly_economics.map((e) => ({
+      year: e.year,
+      Закупки: Number(e.procurement_cost.toFixed(2)),
+      Бронирование: Number(e.reservation_cost.toFixed(2)),
+      Хранение: Number(e.storage_holding_cost.toFixed(2)),
+      'OPEX ZBO/ISRU': Number((e.zbo_fixed_opex + e.isru_fixed_opex).toFixed(2)),
+      CAPEX: Number(e.total_capex.toFixed(2)),
+      'Дисконтированные (NPV)': Number(e.discounted_expenditure.toFixed(2)),
+    }));
   }, [yearly_economics]);
 
   // 4. Data for Dual-Axis Scenario Comparison
   const comparisonData = useMemo(() => {
+    if (!yearly_balance || !yearly_economics) return [];
     return yearly_balance.map((b, idx) => {
-      const stressBal = stressSimulation?.yearly_balance[idx];
+      const stressBal = stressSimulation?.yearly_balance?.[idx];
       const baseEcon = yearly_economics[idx];
-      const stressEcon = stressSimulation?.yearly_economics[idx];
+      const stressEcon = stressSimulation?.yearly_economics?.[idx];
 
       return {
         year: b.year,
@@ -112,13 +109,17 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
       Emergency: 0,
     };
 
-    yearly_balance.forEach((b) => {
-      totals['Earth-Core'] += b.channel_deliveries['Earth-Core'] || 0;
-      totals['Earth-Flex'] += b.channel_deliveries['Earth-Flex'] || 0;
-      totals['Earth-New'] += b.channel_deliveries['Earth-New'] || 0;
-      totals['Lunar-ISRU'] += b.channel_deliveries['Lunar-ISRU'] || 0;
-      totals['Emergency'] += b.channel_deliveries['Emergency'] || 0;
-    });
+    if (yearly_balance) {
+      yearly_balance.forEach((b) => {
+        if (b.channel_deliveries) {
+          totals['Earth-Core'] += b.channel_deliveries['Earth-Core'] || 0;
+          totals['Earth-Flex'] += b.channel_deliveries['Earth-Flex'] || 0;
+          totals['Earth-New'] += b.channel_deliveries['Earth-New'] || 0;
+          totals['Lunar-ISRU'] += b.channel_deliveries['Lunar-ISRU'] || 0;
+          totals['Emergency'] += b.channel_deliveries['Emergency'] || 0;
+        }
+      });
+    }
 
     const totalAll = Object.values(totals).reduce((a, b) => a + b, 0);
     const colors: Record<string, string> = {
@@ -144,55 +145,19 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
     return { items, totalAll: Number(totalAll.toFixed(1)), isruShare };
   }, [yearly_balance]);
 
-  // Sleek cyber-brutalist Tooltip
-  const renderCustomTooltip = ({ active, payload, label }: any, unit: string, showTotal = false) => {
-    if (!active || !payload || !payload.length) return null;
-
-    let totalSum = 0;
-    if (showTotal) {
-      payload.forEach((entry: any) => {
-        if (typeof entry.value === 'number' && entry.dataKey !== 'Дисконтированные (NPV)') {
-          totalSum += entry.value;
-        }
-      });
-    }
-
-    return (
-      <div className="bg-[#070709]/95 border border-neutral-700 rounded-xl p-3 shadow-2xl backdrop-blur-md min-w-[200px] text-xs font-mono">
-        <div className="text-[11px] font-bold text-neutral-400 border-b border-neutral-800 pb-1.5 mb-2 flex items-center justify-between">
-          <span className="text-white uppercase font-black tracking-wider">Год {label}</span>
-          <span className="text-[10px] text-neutral-500 font-mono">ОТУ Аналитика</span>
-        </div>
-        <div className="space-y-1.5">
-          {payload.map((entry: any, index: number) => {
-            const isDeficit = entry.name === 'Дефицит' || entry.name === 'Дефицит (Стресс-тест)';
-            return (
-              <div key={`tip-${index}`} className="flex items-center justify-between gap-3 text-[11px]">
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className="w-2.5 h-2.5 rounded-sm inline-block"
-                    style={{ backgroundColor: entry.color || entry.stroke || entry.fill }}
-                  />
-                  <span className={isDeficit && entry.value > 0 ? 'text-[#ff2a5f] font-bold' : 'text-neutral-300'}>
-                    {entry.name}:
-                  </span>
-                </div>
-                <span className={`font-bold font-mono ${isDeficit && entry.value > 0 ? 'text-[#ff2a5f]' : 'text-white'}`}>
-                  {typeof entry.value === 'number' ? entry.value.toLocaleString('ru-RU') : entry.value} {unit}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-        {showTotal && totalSum > 0 && (
-          <div className="border-t border-neutral-800 mt-2 pt-1.5 flex items-center justify-between text-[11px] font-bold text-[#ccff00]">
-            <span>ИТОГО ЗА ГОД:</span>
-            <span>{totalSum.toLocaleString('ru-RU', { maximumFractionDigits: 1 })} {unit}</span>
-          </div>
-        )}
-      </div>
-    );
+  // Safe cyber-brutalist Tooltip Style
+  const customTooltipStyle = {
+    backgroundColor: '#070709',
+    border: '1px solid #27272a',
+    borderRadius: '12px',
+    fontSize: '11px',
+    fontFamily: 'monospace',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.9)',
+    color: '#ffffff',
   };
+
+  // EARLY RETURN ONLY AFTER ALL HOOKS
+  if (!simulation) return null;
 
   const isGrid = activeTab === 'all';
 
@@ -308,7 +273,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
                   <CartesianGrid strokeDasharray="2 2" stroke="#1c1c1f" />
                   <XAxis dataKey="year" stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
                   <YAxis stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} unit=" т" />
-                  <Tooltip content={(props) => renderCustomTooltip(props, 'т', true)} />
+                  <Tooltip
+                    contentStyle={customTooltipStyle}
+                    formatter={(val: any, name: any) => [`${Number(val).toLocaleString('ru-RU')} т`, name]}
+                  />
                   <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px', fontFamily: 'monospace' }} />
                   <Bar dataKey="Earth-Core" stackId="deliveries" fill="#ccff00" name="Earth-Core (А)" />
                   <Bar dataKey="Earth-Flex" stackId="deliveries" fill="#ffffff" name="Earth-Flex (B)" />
@@ -381,7 +349,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
                   <CartesianGrid strokeDasharray="2 2" stroke="#1c1c1f" />
                   <XAxis dataKey="year" stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
                   <YAxis stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} unit=" т" />
-                  <Tooltip content={(props) => renderCustomTooltip(props, 'т', false)} />
+                  <Tooltip
+                    contentStyle={customTooltipStyle}
+                    formatter={(val: any, name: any) => [`${Number(val).toLocaleString('ru-RU')} т`, name]}
+                  />
                   <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px', fontFamily: 'monospace' }} />
                   <Area
                     type="monotone"
@@ -448,7 +419,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
                   <CartesianGrid strokeDasharray="2 2" stroke="#1c1c1f" />
                   <XAxis dataKey="year" stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
                   <YAxis stroke="#71717a" tick={{ fontSize: 11, fontFamily: 'monospace' }} unit="M" />
-                  <Tooltip content={(props) => renderCustomTooltip(props, 'млн у.е.', true)} />
+                  <Tooltip
+                    contentStyle={customTooltipStyle}
+                    formatter={(val: any, name: any) => [`${Number(val).toLocaleString('ru-RU')} млн у.е.`, name]}
+                  />
                   <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px', fontFamily: 'monospace' }} />
                   <Bar dataKey="Закупки" stackId="cost" fill="#ccff00" name="Закупка топлива" />
                   <Bar dataKey="Бронирование" stackId="cost" fill="#ffffff" name="Бронь мощностей" />
@@ -529,35 +503,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
                   />
 
                   <Tooltip
-                    content={({ active, payload, label }) => {
-                      if (!active || !payload || !payload.length) return null;
-                      return (
-                        <div className="bg-[#070709]/95 border border-neutral-700 rounded-xl p-3 shadow-2xl backdrop-blur-md min-w-[210px] text-xs font-mono">
-                          <div className="text-[11px] font-bold text-neutral-400 border-b border-neutral-800 pb-1.5 mb-2">
-                            <span className="text-white uppercase">Год {label} // Сопоставление</span>
-                          </div>
-                          <div className="space-y-1.5">
-                            {payload.map((entry: any, i: number) => {
-                              const isTons = entry.dataKey.includes('Потери') || entry.dataKey.includes('Дефицит');
-                              const unitStr = isTons ? 'т' : 'млн у.е.';
-                              return (
-                                <div key={i} className="flex items-center justify-between gap-3 text-[11px]">
-                                  <div className="flex items-center gap-1.5">
-                                    <span
-                                      className="w-2.5 h-2.5 rounded-sm inline-block"
-                                      style={{ backgroundColor: entry.color }}
-                                    />
-                                    <span className="text-neutral-300">{entry.name}:</span>
-                                  </div>
-                                  <span className="font-bold font-mono text-white">
-                                    {entry.value.toLocaleString('ru-RU')} {unitStr}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
+                    contentStyle={customTooltipStyle}
+                    formatter={(val: any, name: any) => {
+                      const isTons = String(name).includes('Потери') || String(name).includes('Дефицит');
+                      return [`${Number(val).toLocaleString('ru-RU')} ${isTons ? 'т' : 'млн у.е.'}`, name];
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px', fontFamily: 'monospace' }} />
@@ -639,17 +588,8 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ simulation, st
                       ))}
                     </Pie>
                     <Tooltip
-                      content={({ active, payload }) => {
-                        if (!active || !payload || !payload.length) return null;
-                        const data = payload[0].payload;
-                        return (
-                          <div className="bg-[#070709]/95 border border-neutral-700 rounded-xl p-3 shadow-2xl backdrop-blur-md text-xs font-mono">
-                            <div className="text-white font-bold mb-1">{data.name}</div>
-                            <div className="text-[#ccff00]">Объём: {data.value.toLocaleString('ru-RU')} т</div>
-                            <div className="text-neutral-400">Доля: {data.percent}%</div>
-                          </div>
-                        );
-                      }}
+                      contentStyle={customTooltipStyle}
+                      formatter={(val: any) => [`${Number(val).toLocaleString('ru-RU')} т`, 'Объём']}
                     />
                   </PieChart>
                 </ResponsiveContainer>
