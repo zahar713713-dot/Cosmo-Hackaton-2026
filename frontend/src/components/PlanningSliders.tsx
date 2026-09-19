@@ -17,6 +17,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
 }) => {
   const years = Object.keys(channelPlans).map(Number).sort((a, b) => a - b);
   const [selectedYear, setSelectedYear] = useState<number>(2035);
+  const [prevChannelStates, setPrevChannelStates] = useState<Record<string, { order: number; res: number }>>({});
 
   const currentPlans = channelPlans[selectedYear] || {};
   const currentBalance = yearlyBalance.find((b) => b.year === selectedYear);
@@ -117,6 +118,52 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
     onChange(updated);
   };
 
+  const toggleMaxOrder = (channelId: string, maxCap: number, curOrder: number, curRes: number) => {
+    const key = `${selectedYear}_${channelId}_order`;
+    const isCurrentlyMax = Math.abs(curOrder - maxCap) < 0.01;
+
+    if (isCurrentlyMax && prevChannelStates[key]) {
+      const prev = prevChannelStates[key];
+      const updated = { ...channelPlans };
+      const curYearPlans = { ...updated[selectedYear] };
+      curYearPlans[channelId] = {
+        target_order_volume: prev.order,
+        reserved_capacity: prev.res,
+      };
+      updated[selectedYear] = curYearPlans;
+      onChange(updated);
+    } else {
+      setPrevChannelStates((prev) => ({
+        ...prev,
+        [key]: { order: curOrder, res: curRes },
+      }));
+      updateOrder(channelId, maxCap);
+    }
+  };
+
+  const toggleMaxReservation = (channelId: string, maxCap: number, curOrder: number, curRes: number) => {
+    const key = `${selectedYear}_${channelId}_res`;
+    const isCurrentlyMax = Math.abs(curRes - maxCap) < 0.01;
+
+    if (isCurrentlyMax && prevChannelStates[key]) {
+      const prev = prevChannelStates[key];
+      const updated = { ...channelPlans };
+      const curYearPlans = { ...updated[selectedYear] };
+      curYearPlans[channelId] = {
+        target_order_volume: prev.order,
+        reserved_capacity: prev.res,
+      };
+      updated[selectedYear] = curYearPlans;
+      onChange(updated);
+    } else {
+      setPrevChannelStates((prev) => ({
+        ...prev,
+        [key]: { order: curOrder, res: curRes },
+      }));
+      updateReservation(channelId, maxCap);
+    }
+  };
+
   return (
     <section className="bg-[#0a0a0c] rounded-2xl border border-neutral-800 p-5 mb-6 shadow-2xl">
       {/* Header & Year Selector */}
@@ -209,6 +256,8 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
           const plan = currentPlans[ch.id] || { reserved_capacity: 0, target_order_volume: 0 };
           const topThreshold = ch.topRatio * plan.reserved_capacity;
           const isTopPenalized = plan.target_order_volume < topThreshold && plan.reserved_capacity > 0;
+          const isOrderMax = Math.abs(plan.target_order_volume - ch.maxCap) < 0.01;
+          const isResMax = Math.abs(plan.reserved_capacity - ch.maxCap) < 0.01;
 
           return (
             <div
@@ -327,7 +376,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                                 updateOrder(ch.id, Math.round(clamped * 10) / 10);
                               }
                             }}
-                            className="w-14 h-6 text-center text-xs font-mono font-black bg-neutral-950 border border-[#ccff00]/40 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] text-[#ccff00] rounded outline-none px-1"
+                            className="w-14 h-6 text-center text-xs font-mono font-black bg-neutral-950 border border-[#ccff00]/40 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] text-[#ccff00] rounded outline-none px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                           <span className="text-[10px] font-mono text-neutral-400 ml-1">т</span>
                         </div>
@@ -349,9 +398,13 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => updateOrder(ch.id, ch.maxCap)}
-                          className="px-1.5 py-0.5 text-[10px] font-mono font-black bg-[#ccff00]/15 hover:bg-[#ccff00]/25 text-[#ccff00] rounded border border-[#ccff00]/40 transition ml-0.5 active:scale-95"
-                          title="Установить максимальную мощность"
+                          onClick={() => toggleMaxOrder(ch.id, ch.maxCap, plan.target_order_volume, plan.reserved_capacity)}
+                          className={`px-1.5 py-0.5 text-[10px] font-mono font-black rounded border transition ml-0.5 active:scale-95 ${
+                            isOrderMax
+                              ? 'bg-[#ccff00] text-black border-[#ccff00] shadow-sm shadow-[#ccff00]/30'
+                              : 'bg-[#ccff00]/15 hover:bg-[#ccff00]/25 text-[#ccff00] border-[#ccff00]/40'
+                          }`}
+                          title={isOrderMax ? 'Повторный клик вернет значение до нажатия MAX' : 'Установить максимальный отбор (повторный клик вернет прежнее значение)'}
                         >
                           MAX
                         </button>
@@ -410,7 +463,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                                 updateReservation(ch.id, Math.round(clamped * 10) / 10);
                               }
                             }}
-                            className="w-14 h-6 text-center text-xs font-mono font-black bg-neutral-950 border border-neutral-700 focus:border-white focus:ring-1 focus:ring-white text-white rounded outline-none px-1"
+                            className="w-14 h-6 text-center text-xs font-mono font-black bg-neutral-950 border border-neutral-700 focus:border-white focus:ring-1 focus:ring-white text-white rounded outline-none px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                           <span className="text-[10px] font-mono text-neutral-400 ml-1">т</span>
                         </div>
@@ -432,9 +485,13 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => updateReservation(ch.id, ch.maxCap)}
-                          className="px-1.5 py-0.5 text-[10px] font-mono font-black bg-white/15 hover:bg-white/25 text-white rounded border border-white/40 transition ml-0.5 active:scale-95"
-                          title="Установить максимальную мощность"
+                          onClick={() => toggleMaxReservation(ch.id, ch.maxCap, plan.target_order_volume, plan.reserved_capacity)}
+                          className={`px-1.5 py-0.5 text-[10px] font-mono font-black rounded border transition ml-0.5 active:scale-95 ${
+                            isResMax
+                              ? 'bg-white text-black border-white shadow-sm shadow-white/30'
+                              : 'bg-white/15 hover:bg-white/25 text-white border-white/40'
+                          }`}
+                          title={isResMax ? 'Повторный клик вернет значение до нажатия MAX' : 'Установить максимальную бронь (повторный клик вернет прежнее значение)'}
                         >
                           MAX
                         </button>
