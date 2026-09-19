@@ -21,7 +21,7 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
   const capex37Violations = violations.filter((v) => v.is_violated && v.rule_code === 'CAPEX_2037_LIMIT');
   const capexTotViolations = violations.filter((v) => v.is_violated && v.rule_code === 'CAPEX_TOTAL_LIMIT');
   const reserveViolations = violations.filter((v) => v.is_violated && v.rule_code === 'RESERVE_45_DAYS');
-  const storageViolations = violations.filter((v) => v.rule_code === 'STORAGE_CAPACITY_OVERFLOW');
+  const storageViolations = violations.filter((v) => v.is_violated && v.rule_code === 'STORAGE_CAPACITY_OVERFLOW');
   const emergencyViolations = violations.filter((v) => v.is_violated && v.rule_code === 'EMERGENCY_CONSECUTIVE_LIMIT');
   const stressLossViolations = violations.filter((v) => v.is_violated && v.rule_code === 'STRESS_LOSS_CEILING_BREACH');
 
