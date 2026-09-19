@@ -146,8 +146,8 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
 
   return (
     <section className="bg-[#0a0a0c] rounded-2xl border border-neutral-800 p-5 mb-6 shadow-2xl relative overflow-hidden">
-      {/* Top bar with status pill and audit toggle */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-neutral-800 pb-4">
+      {/* Top bar with status pill */}
+      <div className="flex items-center justify-between gap-3 mb-5 border-b border-neutral-800 pb-4">
         <div className="flex items-center gap-3">
           {summary_kpi.is_feasible ? (
             <div className="flex items-center gap-2 bg-[#ccff00] text-black px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase shadow-lg shadow-[#ccff00]/20">
@@ -164,18 +164,6 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
             &lt;контроль критериев 4, 10, 19&gt;
           </span>
         </div>
-
-        <button
-          onClick={() => setShowAllDetails(!showAllDetails)}
-          className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-[#ccff00] transition font-mono border border-neutral-800 hover:border-neutral-600 px-3 py-1 rounded-full bg-neutral-900/60"
-        >
-          <span>
-            {trueViolations.length > 0
-              ? `НАРУШЕНИЯ (${trueViolations.length})`
-              : `ПОДРОБНЫЙ АУДИТ (${displayedAuditRecords.length})`}
-          </span>
-          {showAllDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5 text-[#ccff00]" />}
-        </button>
       </div>
 
       {/* 7 Metric Grid Blocks (Symmetrical & Centered) */}
@@ -261,27 +249,50 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
         </div>
       )}
 
+      {/* Detailed Audit toggle bar placed right above the Journal */}
+      <div className="mt-5 pt-4 border-t border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <button
+          onClick={() => setShowAllDetails(!showAllDetails)}
+          className="flex items-center gap-2 text-xs font-mono border border-neutral-800 hover:border-neutral-600 px-3.5 py-1.5 rounded-full bg-neutral-900/80 text-neutral-300 hover:text-[#ccff00] transition self-start shadow-sm"
+        >
+          <span className="font-bold">
+            {trueViolations.length > 0
+              ? `НАРУШЕНИЯ (${trueViolations.length})`
+              : `ПОДРОБНЫЙ АУДИТ (${displayedAuditRecords.length})`}
+          </span>
+          <span className="text-neutral-500 text-[11px]">
+            {showAllDetails ? '• скрыть журнал' : '• открыть журнал ограничений'}
+          </span>
+          {showAllDetails ? (
+            <ChevronUp className="w-3.5 h-3.5 text-[#ccff00]" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5 text-[#ccff00]" />
+          )}
+        </button>
+
+        {showAllDetails && (
+          <div className="flex items-center gap-3 animate-fadeIn">
+            <label className="flex items-center gap-1.5 text-[11px] text-neutral-400 cursor-pointer font-mono">
+              <input
+                type="checkbox"
+                checked={filterOnlyViolations}
+                onChange={(e) => setFilterOnlyViolations(e.target.checked)}
+                className="rounded border-neutral-700 bg-neutral-800 text-[#ccff00] focus:ring-0"
+              />
+              <span>Только нарушения</span>
+            </label>
+            <span className="text-[11px] text-neutral-500 font-mono">
+              Записей: {displayedAuditRecords.length} (Нарушений: {trueViolations.length})
+            </span>
+          </div>
+        )}
+      </div>
+
       {/* Expandable detailed audit list */}
       {showAllDetails && (
-        <div className="mt-5 pt-4 border-t border-neutral-800 animate-fadeIn">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-            <span className="text-xs font-black uppercase tracking-wider text-neutral-300">
-              ЖУРНАЛ КОНТРОЛЬНЫХ ОГРАНИЧЕНИЙ И ШТРАФОВ (КРИТЕРИЙ 19)
-            </span>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-1.5 text-[11px] text-neutral-400 cursor-pointer font-mono">
-                <input
-                  type="checkbox"
-                  checked={filterOnlyViolations}
-                  onChange={(e) => setFilterOnlyViolations(e.target.checked)}
-                  className="rounded border-neutral-700 bg-neutral-800 text-[#ccff00] focus:ring-0"
-                />
-                <span>Только нарушения</span>
-              </label>
-              <span className="text-[11px] text-neutral-500 font-mono">
-                Записей: {displayedAuditRecords.length} (Нарушений: {trueViolations.length})
-              </span>
-            </div>
+        <div className="mt-3.5 animate-fadeIn">
+          <div className="text-xs font-black uppercase tracking-wider text-neutral-300 mb-2.5">
+            ЖУРНАЛ КОНТРОЛЬНЫХ ОГРАНИЧЕНИЙ И ШТРАФОВ (КРИТЕРИЙ 19)
           </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
