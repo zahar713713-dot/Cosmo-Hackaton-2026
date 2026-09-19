@@ -53,12 +53,16 @@ function createDefaultChannelPlans(horizonYears: number[]): Record<number, Recor
       rem = 0;
     }
 
+    // Contracted emergency reserve to satisfy 45-day reserve compliance
+    const req45d = Math.round((d * 45) / 365);
+    const emergencyRes = Math.min(80, Math.max(20, req45d));
+
     plans[y] = {
       'Earth-Core': { reserved_capacity: coreCap, target_order_volume: coreCap },
       'Earth-Flex': { reserved_capacity: finalFlex, target_order_volume: finalFlex },
       'Earth-New': { reserved_capacity: 0, target_order_volume: 0 },
       'Lunar-ISRU': { reserved_capacity: isruCap, target_order_volume: isruCap },
-      'Emergency': { reserved_capacity: 20, target_order_volume: 0 }, // Standby reserve
+      'Emergency': { reserved_capacity: emergencyRes, target_order_volume: 0 }, // Standby reserve covering 45d
     };
   }
   return plans;
@@ -185,6 +189,7 @@ export const App: React.FC = () => {
   }, [triggerRecalculation]);
 
   const handleReset = () => {
+    setSelectedAlgorithm('regulatory');
     setScenario('baseline');
     setInvestments({
       zbo_year: 2036,
