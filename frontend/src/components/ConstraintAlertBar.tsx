@@ -160,9 +160,6 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
               <span>НАРУШЕНЫ ОГРАНИЧЕНИЯ КЕЙСА ({trueViolations.length})</span>
             </div>
           )}
-          <span className="text-[11px] text-neutral-500 font-mono tracking-wide hidden md:inline">
-            &lt;контроль критериев 4, 10, 19&gt;
-          </span>
         </div>
       </div>
 
