@@ -17,7 +17,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
 }) => {
   const years = Object.keys(channelPlans).map(Number).sort((a, b) => a - b);
   const [selectedYear, setSelectedYear] = useState<number>(2035);
-  const [prevChannelStates, setPrevChannelStates] = useState<Record<string, { order: number; res: number }>>({});
+  const [prevChannelStates, setPrevChannelStates] = useState<Record<string, number>>({});
 
   const currentPlans = channelPlans[selectedYear] || {};
   const currentBalance = yearlyBalance.find((b) => b.year === selectedYear);
@@ -93,11 +93,10 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
   const updateOrder = (channelId: string, orderVal: number) => {
     const updated = { ...channelPlans };
     const curYearPlans = { ...updated[selectedYear] };
-    const curCh = curYearPlans[channelId] || { reserved_capacity: orderVal, target_order_volume: orderVal };
+    const curCh = curYearPlans[channelId] || { reserved_capacity: 0, target_order_volume: 0 };
 
-    const newRes = Math.max(curCh.reserved_capacity, orderVal);
     curYearPlans[channelId] = {
-      reserved_capacity: newRes,
+      ...curCh,
       target_order_volume: orderVal,
     };
     updated[selectedYear] = curYearPlans;
@@ -107,58 +106,41 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
   const updateReservation = (channelId: string, resVal: number) => {
     const updated = { ...channelPlans };
     const curYearPlans = { ...updated[selectedYear] };
-    const curCh = curYearPlans[channelId] || { reserved_capacity: resVal, target_order_volume: 0 };
+    const curCh = curYearPlans[channelId] || { reserved_capacity: 0, target_order_volume: 0 };
 
-    const newOrder = Math.min(curCh.target_order_volume, resVal);
     curYearPlans[channelId] = {
+      ...curCh,
       reserved_capacity: resVal,
-      target_order_volume: newOrder,
     };
     updated[selectedYear] = curYearPlans;
     onChange(updated);
   };
 
-  const toggleMaxOrder = (channelId: string, maxCap: number, curOrder: number, curRes: number) => {
+  const toggleMaxOrder = (channelId: string, maxCap: number, curOrder: number) => {
     const key = `${selectedYear}_${channelId}_order`;
     const isCurrentlyMax = Math.abs(curOrder - maxCap) < 0.01;
 
-    if (isCurrentlyMax && prevChannelStates[key]) {
-      const prev = prevChannelStates[key];
-      const updated = { ...channelPlans };
-      const curYearPlans = { ...updated[selectedYear] };
-      curYearPlans[channelId] = {
-        target_order_volume: prev.order,
-        reserved_capacity: prev.res,
-      };
-      updated[selectedYear] = curYearPlans;
-      onChange(updated);
+    if (isCurrentlyMax && prevChannelStates[key] !== undefined) {
+      updateOrder(channelId, prevChannelStates[key]);
     } else {
       setPrevChannelStates((prev) => ({
         ...prev,
-        [key]: { order: curOrder, res: curRes },
+        [key]: curOrder,
       }));
       updateOrder(channelId, maxCap);
     }
   };
 
-  const toggleMaxReservation = (channelId: string, maxCap: number, curOrder: number, curRes: number) => {
+  const toggleMaxReservation = (channelId: string, maxCap: number, curRes: number) => {
     const key = `${selectedYear}_${channelId}_res`;
     const isCurrentlyMax = Math.abs(curRes - maxCap) < 0.01;
 
-    if (isCurrentlyMax && prevChannelStates[key]) {
-      const prev = prevChannelStates[key];
-      const updated = { ...channelPlans };
-      const curYearPlans = { ...updated[selectedYear] };
-      curYearPlans[channelId] = {
-        target_order_volume: prev.order,
-        reserved_capacity: prev.res,
-      };
-      updated[selectedYear] = curYearPlans;
-      onChange(updated);
+    if (isCurrentlyMax && prevChannelStates[key] !== undefined) {
+      updateReservation(channelId, prevChannelStates[key]);
     } else {
       setPrevChannelStates((prev) => ({
         ...prev,
-        [key]: { order: curOrder, res: curRes },
+        [key]: curRes,
       }));
       updateReservation(channelId, maxCap);
     }
@@ -398,7 +380,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => toggleMaxOrder(ch.id, ch.maxCap, plan.target_order_volume, plan.reserved_capacity)}
+                          onClick={() => toggleMaxOrder(ch.id, ch.maxCap, plan.target_order_volume)}
                           className={`px-1.5 py-0.5 text-[10px] font-mono font-black rounded border transition ml-0.5 active:scale-95 ${
                             isOrderMax
                               ? 'bg-[#ccff00] text-black border-[#ccff00] shadow-sm shadow-[#ccff00]/30'
@@ -485,7 +467,7 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => toggleMaxReservation(ch.id, ch.maxCap, plan.target_order_volume, plan.reserved_capacity)}
+                          onClick={() => toggleMaxReservation(ch.id, ch.maxCap, plan.reserved_capacity)}
                           className={`px-1.5 py-0.5 text-[10px] font-mono font-black rounded border transition ml-0.5 active:scale-95 ${
                             isResMax
                               ? 'bg-white text-black border-white shadow-sm shadow-white/30'
