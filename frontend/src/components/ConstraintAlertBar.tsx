@@ -59,6 +59,14 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       violation: capexTotViolations[0],
     },
     {
+      tag: '<расходы opex>',
+      title: 'СУММАРНЫЙ OPEX',
+      rule: 'Закупки + Хранение',
+      status: true,
+      actual: `${summary_kpi.total_opex_m_cu.toLocaleString('ru-RU')} млн`,
+      violation: undefined,
+    },
+    {
       tag: '<буферный запас>',
       title: 'РЕЗЕРВ 45 ДНЕЙ',
       rule: 'Страховой буфер',
@@ -76,9 +84,19 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
     },
   ];
 
+  const opexAuditRecord = {
+    year: '2035–2040',
+    rule_code: 'OPEX_EXPENDITURE',
+    rule_name: 'Операционные расходы (OPEX)',
+    expected: 'Контроль эффективности',
+    actual: `${summary_kpi.total_opex_m_cu.toLocaleString('ru-RU')} млн у.е.`,
+    message: `Совокупные операционные затраты OPEX программы: ${summary_kpi.total_opex_m_cu.toLocaleString('ru-RU')} млн у.е. (включает закупку топлива, бронирование мощностей, хранение на ОТУ и эксплуатацию ZBO/ISRU).`,
+    is_violated: false,
+  };
+
   const displayedAuditRecords = filterOnlyViolations
     ? trueViolations
-    : violations;
+    : [opexAuditRecord, ...violations];
 
   return (
     <section className="bg-[#0a0a0c] rounded-2xl border border-neutral-800 p-5 mb-6 shadow-2xl relative overflow-hidden">
@@ -108,25 +126,27 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
           <span>
             {trueViolations.length > 0
               ? `НАРУШЕНИЯ (${trueViolations.length})`
-              : `ПОДРОБНЫЙ АУДИТ (${violations.length})`}
+              : `ПОДРОБНЫЙ АУДИТ (${displayedAuditRecords.length})`}
           </span>
           {showAllDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5 text-[#ccff00]" />}
         </button>
       </div>
 
-      {/* 6 Metric Grid Blocks (Symmetrical & Centered) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-stretch">
+      {/* 7 Metric Grid Blocks (Symmetrical & Centered) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3 items-stretch">
         {cards.map((c, i) => (
           <div
             key={i}
-            className={`h-full min-h-[140px] p-4 rounded-xl border transition-all flex flex-col items-center justify-between text-center relative ${
+            className={`h-full min-h-[135px] sm:min-h-[140px] p-3 sm:p-4 rounded-xl border transition-all flex flex-col items-center justify-between text-center relative ${
+              i === 6 ? 'col-span-2 sm:col-span-1 md:col-span-2 lg:col-span-1' : ''
+            } ${
               c.status
                 ? 'bg-[#0f0f12] border-neutral-800/90 hover:border-neutral-700'
                 : 'bg-[#1a080d] border-[#ff2a5f]/60 text-white shadow-lg shadow-[#ff2a5f]/10'
             }`}
           >
             <div className="w-full flex items-center justify-between mb-1">
-              <span className="text-[10px] text-neutral-500 font-mono">{c.tag}</span>
+              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono">{c.tag}</span>
               {c.status ? (
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#ccff00] shrink-0" />
               ) : (
@@ -135,11 +155,11 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
             </div>
 
             <div className="my-auto py-1">
-              <div className="text-[11px] font-black uppercase tracking-wider text-neutral-300">
+              <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-neutral-300">
                 {c.title}
               </div>
               <div
-                className={`text-xl sm:text-2xl font-black font-mono tracking-tight mt-1 ${
+                className={`text-lg sm:text-xl font-black font-mono tracking-tight mt-1 ${
                   c.status ? 'text-white' : 'text-[#ff2a5f]'
                 }`}
               >
