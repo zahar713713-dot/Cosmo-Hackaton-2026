@@ -115,6 +115,8 @@ class YearlyBalanceDTO(BaseModel):
     service_level_total: float
     service_level_critical: float
     channel_deliveries: Dict[str, float]
+    emergency_reserve: float = 0.0
+    guaranteed_buffer_total: float = 0.0
 
 
 class YearlyEconomicsDTO(BaseModel):

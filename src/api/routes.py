@@ -149,6 +149,14 @@ def _format_simulation_response(run: SimulationRunOutput) -> SimulationResponse:
 
     balance_dtos: List[YearlyBalanceDTO] = []
     for y, y_bal in sorted(b.yearly_results.items()):
+        em_res = 0.0
+        for chk in c.all_checks:
+            if chk.rule_code == "RESERVE_45_DAYS" and chk.year == y:
+                import re
+                m = re.search(r"\+\s*([\d.]+)\s*т\s*\(бронь", chk.actual)
+                if m:
+                    em_res = float(m.group(1))
+                break
         balance_dtos.append(
             YearlyBalanceDTO(
                 year=y,
@@ -172,6 +180,8 @@ def _format_simulation_response(run: SimulationRunOutput) -> SimulationResponse:
                 service_level_total=y_bal.service_level_total,
                 service_level_critical=y_bal.service_level_critical,
                 channel_deliveries={k.value: v for k, v in y_bal.channel_deliveries.items()},
+                emergency_reserve=round(em_res, 4),
+                guaranteed_buffer_total=round(y_bal.end_stock + em_res, 4),
             )
         )
 

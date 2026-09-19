@@ -48,6 +48,8 @@ export interface YearlyBalanceData {
   service_level_total: number;
   service_level_critical: number;
   channel_deliveries: Record<string, number>;
+  emergency_reserve?: number;
+  guaranteed_buffer_total?: number;
 }
 
 export interface YearlyEconomicsData {

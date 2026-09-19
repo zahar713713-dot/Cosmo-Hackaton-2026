@@ -501,6 +501,8 @@ export function runClientFallbackSimulation(
       service_level_total: Math.round(slTotal * 10000) / 10000,
       service_level_critical: Math.round(slCrit * 10000) / 10000,
       channel_deliveries: channelDeliveries,
+      emergency_reserve: yPlans['Emergency']?.reserved_capacity || 0,
+      guaranteed_buffer_total: Math.round((endStock + (yPlans['Emergency']?.reserved_capacity || 0)) * 100) / 100,
     });
 
     // Economics
