@@ -306,12 +306,12 @@ def apply_scenario(
                     viol = ConstraintViolation(
                         year=y,
                         rule_code="STRESS_LOSS_CEILING_BREACH",
-                        rule_name="Stress Throughput Loss Ceiling",
+                        rule_name="Потолок потерь при стресс-тесте",
                         expected=f"<={max_loss:.1%}",
                         actual=f"{actual_loss:.1%}",
                         message=(
-                            f"Year {y}: Throughput loss rate {actual_loss:.1%} exceeds scenario ceiling of "
-                            f"{max_loss:.1%}. Mandatory ZBO upgrade is required to achieve <=1.2% losses."
+                            f"Год {y}: Коэффициент потерь {actual_loss:.1%} превышает лимит стресс-сценария "
+                            f"{max_loss:.1%}. Требуется обязательное внедрение ZBO для снижения потерь до <=1.2%."
                         ),
                         is_violated=True,
                     )

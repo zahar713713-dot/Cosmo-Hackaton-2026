@@ -113,7 +113,7 @@ class TestScenariosVerification:
         assert len(loss_violations) >= 1
         assert any(v.year == 2038 for v in loss_violations)
         assert output.constraints.is_feasible is False
-        assert "exceeds scenario ceiling of 2.0%" in loss_violations[0].message
+        assert "превышает лимит стресс-сценария" in loss_violations[0].message
 
     def test_capex_2037_limit_violation(self):
         """
@@ -137,4 +137,5 @@ class TestScenariosVerification:
         assert len(capex_viols) == 1
         assert capex_viols[0].is_violated is True
         assert con_res.is_feasible is False
-        assert "exceeding budget limit of 1800.0 M c.u." in capex_viols[0].message
+        assert "1800.0" in capex_viols[0].message and "лимит" in capex_viols[0].message.lower()
+

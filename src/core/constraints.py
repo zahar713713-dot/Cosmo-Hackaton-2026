@@ -99,55 +99,55 @@ def validate_constraints(
         b_res = balance.yearly_results[year]
         plan = plans[year]
 
-        # Rule 1: Critical Service Level >= 99%
+        # Правило 1: Критический SLA >= 99%
         crit_sl = b_res.service_level_critical
         crit_viol = crit_sl < (MIN_CRITICAL_SERVICE_LEVEL - 1e-5)
         record_check(
             year=year,
             rule_code="CRITICAL_SERVICE_LEVEL",
-            rule_name="Critical Demand Service Level",
+            rule_name="Критический уровень обслуживания (SLA)",
             expected=f">={MIN_CRITICAL_SERVICE_LEVEL:.1%}",
             actual=f"{crit_sl:.2%}",
             message=(
-                f"Critical service level is {crit_sl:.2%}, below mandatory {MIN_CRITICAL_SERVICE_LEVEL:.1%}. "
-                f"Deficit: {b_res.deficit_critical:.2f} t."
-            ) if crit_viol else "Critical service level satisfied.",
+                f"Критический SLA равен {crit_sl:.2%}, что ниже нормы {MIN_CRITICAL_SERVICE_LEVEL:.1%}. "
+                f"Дефицит пилотируемых миссий: {b_res.deficit_critical:.2f} т."
+            ) if crit_viol else "Критический SLA удовлетворен.",
             violated=crit_viol,
         )
 
-        # Rule 2: Total Service Level >= 97%
+        # Правило 2: Общий SLA >= 97%
         tot_sl = b_res.service_level_total
         tot_viol = tot_sl < (MIN_TOTAL_SERVICE_LEVEL - 1e-5)
         record_check(
             year=year,
             rule_code="TOTAL_SERVICE_LEVEL",
-            rule_name="Total Demand Service Level",
+            rule_name="Совокупный уровень обслуживания (SLA)",
             expected=f">={MIN_TOTAL_SERVICE_LEVEL:.1%}",
             actual=f"{tot_sl:.2%}",
             message=(
-                f"Total service level is {tot_sl:.2%}, below mandatory {MIN_TOTAL_SERVICE_LEVEL:.1%}. "
-                f"Deficit: {b_res.deficit_total:.2f} t."
-            ) if tot_viol else "Total service level satisfied.",
+                f"Общий SLA составляет {tot_sl:.2%}, что ниже обязательной нормы {MIN_TOTAL_SERVICE_LEVEL:.1%}. "
+                f"Дефицит: {b_res.deficit_total:.2f} т."
+            ) if tot_viol else "Общий SLA удовлетворен.",
             violated=tot_viol,
         )
 
-        # Rule 3: Tank Storage Capacity Overflow
+        # Правило 3: Вместимость баков ОТУ
         storage_viol = b_res.is_storage_overflow
         record_check(
             year=year,
             rule_code="STORAGE_CAPACITY_OVERFLOW",
-            rule_name="Depot Tank Capacity",
-            expected=f"<={b_res.storage_capacity_max:.1f} t",
-            actual=f"{b_res.end_stock:.2f} t",
+            rule_name="Вместимость баков ОТУ",
+            expected=f"<={b_res.storage_capacity_max:.1f} т",
+            actual=f"{b_res.end_stock:.2f} т",
             message=(
-                f"Tank overflow by {b_res.overflow_amount:.2f} t. "
-                f"Closing stock {b_res.end_stock:.2f} t exceeds capacity {b_res.storage_capacity_max:.1f} t."
-            ) if storage_viol else "Tank capacity respected.",
+                f"Переполнение баков на {b_res.overflow_amount:.2f} т. "
+                f"Конечный остаток {b_res.end_stock:.2f} т превышает предельную вместимость {b_res.storage_capacity_max:.1f} т."
+            ) if storage_viol else "Вместимость баков соблюдена.",
             violated=storage_viol,
         )
 
-        # Rule 4: 45-day Reserve Compliance
-        # Can be satisfied physically OR via contracted emergency reserve
+        # Правило 4: Неснижаемый 45-дневный буфер топлива
+        # Может обеспечиваться физически или законтрактованной бронью Emergency
         em_order = plan.orders.get(ChannelID.EMERGENCY)
         em_reserved = em_order.reserved_capacity if em_order else 0.0
         
@@ -157,17 +157,17 @@ def validate_constraints(
         record_check(
             year=year,
             rule_code="RESERVE_45_DAYS",
-            rule_name="45-Day Propellant Reserve",
-            expected=f">={b_res.required_reserve_45d:.2f} t",
-            actual=f"{b_res.start_stock:.2f} t (phys) + {em_reserved:.2f} t (emerg res)",
+            rule_name="45-дневный страховой буфер топлива",
+            expected=f">={b_res.required_reserve_45d:.2f} т",
+            actual=f"{b_res.start_stock:.2f} т (физ.) + {em_reserved:.2f} т (бронь Emergency)",
             message=(
-                f"45-day reserve violated: physical stock ({b_res.start_stock:.2f} t) + Emergency reserve "
-                f"({em_reserved:.2f} t) < required {b_res.required_reserve_45d:.2f} t."
-            ) if not reserve_met else "45-day reserve requirement satisfied.",
+                f"Нарушен 45-дневный буфер: физический запас ({b_res.start_stock:.2f} т) + аварийная бронь "
+                f"({em_reserved:.2f} т) < требуемых {b_res.required_reserve_45d:.2f} т."
+            ) if not reserve_met else "Норма 45-дневного страхового резерва соблюдена.",
             violated=not reserve_met,
         )
 
-        # Rule 5: Channel Capacity Ceilings
+        # Правило 5: Предельная пропускная способность каналов
         for ch_id, ch_cfg in channels.items():
             order = plan.orders.get(ch_id)
             if order:
@@ -175,45 +175,44 @@ def validate_constraints(
                 record_check(
                     year=year,
                     rule_code=f"CHANNEL_MAX_CAP_{ch_id.value.upper()}",
-                    rule_name=f"{ch_id.value} Max Capacity",
-                    expected=f"<={ch_cfg.max_capacity:.1f} t/yr",
-                    actual=f"{order.reserved_capacity:.2f} t/yr",
+                    rule_name=f"Предельная мощность канала {ch_cfg.name}",
+                    expected=f"<={ch_cfg.max_capacity:.1f} т/год",
+                    actual=f"{order.reserved_capacity:.2f} т/год",
                     message=(
-                        f"Reserved capacity ({order.reserved_capacity:.2f} t) exceeds channel max "
-                        f"({ch_cfg.max_capacity:.1f} t)."
-                    ) if cap_viol else "Channel capacity within limits.",
+                        f"Забронированная мощность ({order.reserved_capacity:.2f} т) превышает "
+                        f"предел канала ({ch_cfg.max_capacity:.1f} т/год)."
+                    ) if cap_viol else "Бронирование в пределах мощности канала.",
                     violated=cap_viol,
                 )
 
-        # Rule 6: ISRU Availability & Operational gating
+        # Правило 6: Условия ввода Lunar-ISRU
         if plan.isru_operational:
             isru_allowed = year >= 2038 and plan.isru_funded
             record_check(
                 year=year,
                 rule_code="LUNAR_ISRU_GATING",
-                rule_name="Lunar-ISRU Commissioning Conditions",
-                expected="Operational >= 2038 and fully funded before 2038",
-                actual=f"Year={year}, Funded={plan.isru_funded}",
+                rule_name="Условия ввода Lunar-ISRU",
+                expected="Ввод >= 2038 г. при условии полного финансирования до 2038 г.",
+                actual=f"Год={year}, Профинансировано={plan.isru_funded}",
                 message=(
-                    f"Lunar-ISRU cannot operate in {year}: requires year >= 2038 and CAPEX funding prior to 2038."
-                ) if not isru_allowed else "Lunar-ISRU gating satisfied.",
+                    f"Lunar-ISRU не может поставлять топливо в {year} г.: требуется год >= 2038 и полное финансирование CAPEX до 2038 г."
+                ) if not isru_allowed else "Условия готовности Lunar-ISRU соблюдены.",
                 violated=not isru_allowed,
             )
 
-        # Rule 7: ZBO Earliest Year Gating (2036)
+        # Правило 7: Минимальный срок ввода ZBO (2036)
         if plan.zbo_invested and year < 2036:
             record_check(
                 year=year,
                 rule_code="ZBO_EARLIEST_YEAR",
-                rule_name="ZBO Upgrade Earliest Year",
-                expected="Operational >= 2036",
-                actual=f"Year={year}",
-                message="ZBO upgrade cannot be commissioned prior to 2036.",
+                rule_name="Минимальный срок ввода ZBO",
+                expected="Ввод >= 2036 г.",
+                actual=f"Год={year}",
+                message="Модернизация ZBO не может быть введена ранее 2036 года.",
                 violated=True,
             )
 
-    # 2. Multi-Year Consecutive Emergency Channel Check
-    # "Emergency cannot be used as base channel for more than two consecutive years"
+    # 2. Ограничение непрерывного использования канала Emergency
     consecutive_emergency_years = 0
     max_consecutive_emergency = 0
     violating_streak_end_year: Optional[int] = None
@@ -234,20 +233,20 @@ def validate_constraints(
 
     emergency_consecutive_viol = max_consecutive_emergency > 2
     record_check(
-        year=violating_streak_end_year if violating_streak_end_year else "HORIZON",
+        year=violating_streak_end_year if violating_streak_end_year else "ГОРИЗОНТ",
         rule_code="EMERGENCY_CONSECUTIVE_LIMIT",
-        rule_name="Emergency Consecutive Usage Ceiling",
-        expected="<= 2 consecutive years as base channel",
-        actual=f"{max_consecutive_emergency} consecutive years",
+        rule_name="Лимит непрерывного использования канала Emergency",
+        expected="<= 2 лет подряд как базовый канал",
+        actual=f"{max_consecutive_emergency} года(лет) подряд",
         message=(
-            f"Emergency channel utilized as base supply for {max_consecutive_emergency} consecutive years "
-            f"(threshold > {emergency_base_volume_threshold} t/yr), exceeding the maximum allowed of 2 years."
-        ) if emergency_consecutive_viol else "Emergency channel usage duration compliant.",
+            f"Канал Emergency использовался как базовый {max_consecutive_emergency} года подряд "
+            f"(отбор > {emergency_base_volume_threshold} т/год), что превышает лимит 2 года подряд."
+        ) if emergency_consecutive_viol else "Срок использования канала Emergency в норме.",
         violated=emergency_consecutive_viol,
     )
 
-    # 3. CAPEX Budget Limits
-    # Limit 1: Through end of 2037 <= 1800 M c.u.
+    # 3. Лимиты бюджета CAPEX
+    # Лимит 1: До конца 2037 г. <= 1800 млн у.е.
     capex_thru_2037 = sum(
         economics.yearly_economics[y].total_capex for y in config.horizon if y <= 2037
     )
@@ -255,17 +254,17 @@ def validate_constraints(
     record_check(
         year=2037,
         rule_code="CAPEX_2037_LIMIT",
-        rule_name="Cumulative CAPEX Through 2037",
-        expected=f"<={MAX_CAPEX_2037:.1f} M c.u.",
-        actual=f"{capex_thru_2037:.1f} M c.u.",
+        rule_name="Суммарный CAPEX до конца 2037 года",
+        expected=f"<={MAX_CAPEX_2037:.1f} млн у.е.",
+        actual=f"{capex_thru_2037:.1f} млн у.е.",
         message=(
-            f"Cumulative CAPEX through 2037 is {capex_thru_2037:.1f} M c.u., exceeding budget limit "
-            f"of {MAX_CAPEX_2037:.1f} M c.u. by {capex_thru_2037 - MAX_CAPEX_2037:.1f} M c.u."
-        ) if capex_2037_viol else "CAPEX through 2037 within budget limit.",
+            f"Суммарный CAPEX до 2037 г. составляет {capex_thru_2037:.1f} млн у.е., превышая лимит "
+            f"в {MAX_CAPEX_2037:.1f} млн у.е. на {capex_thru_2037 - MAX_CAPEX_2037:.1f} млн у.е."
+        ) if capex_2037_viol else "CAPEX до 2037 г. в пределах директивного лимита.",
         violated=capex_2037_viol,
     )
 
-    # Limit 2: Cumulative CAPEX through 2040 <= 2800 M c.u.
+    # Лимит 2: Совокупный CAPEX программы <= 2800 млн у.е.
     capex_thru_2040 = sum(
         economics.yearly_economics[y].total_capex for y in config.horizon if y <= 2040
     )
@@ -273,13 +272,13 @@ def validate_constraints(
     record_check(
         year=min(2040, config.end_year),
         rule_code="CAPEX_TOTAL_LIMIT",
-        rule_name="Cumulative CAPEX Through 2040",
-        expected=f"<={MAX_CAPEX_TOTAL:.1f} M c.u.",
-        actual=f"{capex_thru_2040:.1f} M c.u.",
+        rule_name="Совокупный CAPEX программы до 2040 года",
+        expected=f"<={MAX_CAPEX_TOTAL:.1f} млн у.е.",
+        actual=f"{capex_thru_2040:.1f} млн у.е.",
         message=(
-            f"Cumulative CAPEX through 2040 is {capex_thru_2040:.1f} M c.u., exceeding total budget limit "
-            f"of {MAX_CAPEX_TOTAL:.1f} M c.u. by {capex_thru_2040 - MAX_CAPEX_TOTAL:.1f} M c.u."
-        ) if capex_total_viol else "Total CAPEX within budget limit.",
+            f"Совокупный CAPEX программы равен {capex_thru_2040:.1f} млн у.е., превышая утвержденный лимит "
+            f"в {MAX_CAPEX_TOTAL:.1f} млн у.е. на {capex_thru_2040 - MAX_CAPEX_TOTAL:.1f} млн у.е."
+        ) if capex_total_viol else "Совокупный CAPEX программы в пределах бюджета.",
         violated=capex_total_viol,
     )
 
