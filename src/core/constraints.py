@@ -109,9 +109,9 @@ def validate_constraints(
             expected=f">={MIN_CRITICAL_SERVICE_LEVEL:.1%}",
             actual=f"{crit_sl:.2%}",
             message=(
-                f"Критический SLA равен {crit_sl:.2%}, что ниже нормы {MIN_CRITICAL_SERVICE_LEVEL:.1%}. "
+                f"Год {year}: Критический SLA равен {crit_sl:.2%}, что ниже нормы {MIN_CRITICAL_SERVICE_LEVEL:.1%}. "
                 f"Дефицит пилотируемых миссий: {b_res.deficit_critical:.2f} т."
-            ) if crit_viol else "Критический SLA удовлетворен.",
+            ) if crit_viol else f"Год {year}: Критический SLA удовлетворен ({crit_sl:.2%}).",
             violated=crit_viol,
         )
 
@@ -125,9 +125,9 @@ def validate_constraints(
             expected=f">={MIN_TOTAL_SERVICE_LEVEL:.1%}",
             actual=f"{tot_sl:.2%}",
             message=(
-                f"Общий SLA составляет {tot_sl:.2%}, что ниже обязательной нормы {MIN_TOTAL_SERVICE_LEVEL:.1%}. "
+                f"Год {year}: Общий SLA составляет {tot_sl:.2%}, что ниже обязательной нормы {MIN_TOTAL_SERVICE_LEVEL:.1%}. "
                 f"Дефицит: {b_res.deficit_total:.2f} т."
-            ) if tot_viol else "Общий SLA удовлетворен.",
+            ) if tot_viol else f"Год {year}: Общий SLA удовлетворен ({tot_sl:.2%}).",
             violated=tot_viol,
         )
 
@@ -140,9 +140,9 @@ def validate_constraints(
             expected=f"<={b_res.storage_capacity_max:.1f} т",
             actual=f"{b_res.end_stock:.2f} т",
             message=(
-                f"Переполнение баков на {b_res.overflow_amount:.2f} т. "
+                f"Год {year}: Переполнение баков на {b_res.overflow_amount:.2f} т. "
                 f"Конечный остаток {b_res.end_stock:.2f} т превышает предельную вместимость {b_res.storage_capacity_max:.1f} т."
-            ) if storage_viol else "Вместимость баков соблюдена.",
+            ) if storage_viol else f"Год {year}: Вместимость баков соблюдена.",
             violated=storage_viol,
         )
 
@@ -161,9 +161,9 @@ def validate_constraints(
             expected=f">={b_res.required_reserve_45d:.2f} т",
             actual=f"{b_res.start_stock:.2f} т (физ.) + {em_reserved:.2f} т (бронь Emergency)",
             message=(
-                f"Нарушен 45-дневный буфер: физический запас ({b_res.start_stock:.2f} т) + аварийная бронь "
+                f"Год {year}: Нарушен 45-дневный буфер: физический запас ({b_res.start_stock:.2f} т) + аварийная бронь "
                 f"({em_reserved:.2f} т) < требуемых {b_res.required_reserve_45d:.2f} т."
-            ) if not reserve_met else "Норма 45-дневного страхового резерва соблюдена.",
+            ) if not reserve_met else f"Год {year}: Норма 45-дневного страхового резерва соблюдена.",
             violated=not reserve_met,
         )
 
@@ -179,9 +179,9 @@ def validate_constraints(
                     expected=f"<={ch_cfg.max_capacity:.1f} т/год",
                     actual=f"{order.reserved_capacity:.2f} т/год",
                     message=(
-                        f"Забронированная мощность ({order.reserved_capacity:.2f} т) превышает "
+                        f"Год {year}: Забронированная мощность ({order.reserved_capacity:.2f} т) превышает "
                         f"предел канала ({ch_cfg.max_capacity:.1f} т/год)."
-                    ) if cap_viol else "Бронирование в пределах мощности канала.",
+                    ) if cap_viol else f"Год {year}: Бронирование в пределах мощности канала.",
                     violated=cap_viol,
                 )
 

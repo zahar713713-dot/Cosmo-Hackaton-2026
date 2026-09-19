@@ -12,7 +12,7 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
 
   if (!simulation) return null;
 
-  const { violations, summary_kpi } = simulation;
+  const { violations, summary_kpi, yearly_balance, yearly_economics } = simulation;
 
   // Filter ONLY real violations where is_violated === true
   const trueViolations = violations.filter((v) => v.is_violated);
@@ -25,30 +25,64 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
   const emergencyViolations = violations.filter((v) => v.is_violated && v.rule_code === 'EMERGENCY_CONSECUTIVE_LIMIT');
   const stressLossViolations = violations.filter((v) => v.is_violated && v.rule_code === 'STRESS_LOSS_CEILING_BREACH');
 
+  // Find minimum service levels across all years to match constraint checks
+  const minCritSl =
+    yearly_balance && yearly_balance.length > 0
+      ? Math.min(...yearly_balance.map((b) => b.service_level_critical))
+      : summary_kpi.average_service_level_critical;
+
+  const minTotSl =
+    yearly_balance && yearly_balance.length > 0
+      ? Math.min(...yearly_balance.map((b) => b.service_level_total))
+      : summary_kpi.average_service_level_total;
+
+  // Calculate actual capex thru 2037
+  const capexThru2037 =
+    yearly_economics && yearly_economics.length > 0
+      ? yearly_economics
+          .filter((e) => parseInt(String(e.year), 10) <= 2037)
+          .reduce((sum, e) => sum + e.total_capex, 0)
+      : (capex37Violations[0] ? parseFloat(capex37Violations[0].actual) : summary_kpi.total_capex_m_cu);
+
   const cards = [
     {
       tag: '<крит. спрос>',
       title: 'КРИТИЧЕСКИЙ SLA',
-      rule: 'Норма: ≥ 99.0%',
+      rule: critViolations.length === 0 ? 'Норма: ≥ 99.0%' : `Норма: ≥ 99.0% (ср. ${(summary_kpi.average_service_level_critical * 100).toFixed(1)}%)`,
       status: critViolations.length === 0,
-      actual: `${(summary_kpi.average_service_level_critical * 100).toFixed(1)}%`,
-      violation: critViolations[0],
+      actual: critViolations.length === 0
+        ? `${(summary_kpi.average_service_level_critical * 100).toFixed(1)}%`
+        : `${(minCritSl * 100).toFixed(1)}%`,
+      badge: critViolations.length > 0 ? `Худший год: ${(minCritSl * 100).toFixed(1)}%` : undefined,
+      violationSummary: critViolations.length === 1
+        ? critViolations[0].message
+        : (critViolations.length > 1
+            ? `Нарушено в ${critViolations.length} гг. (мин: ${(minCritSl * 100).toFixed(1)}%): ${critViolations.map((v) => `${v.year} г. (${v.actual})`).join(', ')}`
+            : undefined),
     },
     {
       tag: '<общий спрос>',
       title: 'ОБЩИЙ SLA',
-      rule: 'Норма: ≥ 97.0%',
+      rule: totViolations.length === 0 ? 'Норма: ≥ 97.0%' : `Норма: ≥ 97.0% (ср. ${(summary_kpi.average_service_level_total * 100).toFixed(1)}%)`,
       status: totViolations.length === 0,
-      actual: `${(summary_kpi.average_service_level_total * 100).toFixed(1)}%`,
-      violation: totViolations[0],
+      actual: totViolations.length === 0
+        ? `${(summary_kpi.average_service_level_total * 100).toFixed(1)}%`
+        : `${(minTotSl * 100).toFixed(1)}%`,
+      badge: totViolations.length > 0 ? `Худший год: ${(minTotSl * 100).toFixed(1)}%` : undefined,
+      violationSummary: totViolations.length === 1
+        ? totViolations[0].message
+        : (totViolations.length > 1
+            ? `Нарушено в ${totViolations.length} гг. (мин: ${(minTotSl * 100).toFixed(1)}%): ${totViolations.map((v) => `${v.year} г. (${v.actual})`).join(', ')}`
+            : undefined),
     },
     {
       tag: '<инвест этап 1>',
       title: 'CAPEX ДО 2037',
       rule: 'Лимит: ≤ 1 800 млн',
       status: capex37Violations.length === 0,
-      actual: `${summary_kpi.total_capex_m_cu.toFixed(0)} млн`,
-      violation: capex37Violations[0],
+      actual: `${capexThru2037.toFixed(0)} млн`,
+      badge: undefined,
+      violationSummary: capex37Violations[0]?.message,
     },
     {
       tag: '<полный бюджет>',
@@ -56,7 +90,8 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       rule: 'Лимит: ≤ 2 800 млн',
       status: capexTotViolations.length === 0,
       actual: `${summary_kpi.total_capex_m_cu.toFixed(0)} млн`,
-      violation: capexTotViolations[0],
+      badge: undefined,
+      violationSummary: capexTotViolations[0]?.message,
     },
     {
       tag: '<расходы opex>',
@@ -64,7 +99,8 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       rule: 'Закупки + Хранение',
       status: true,
       actual: `${summary_kpi.total_opex_m_cu.toLocaleString('ru-RU')} млн`,
-      violation: undefined,
+      badge: undefined,
+      violationSummary: undefined,
     },
     {
       tag: '<буферный запас>',
@@ -72,7 +108,12 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       rule: 'Страховой буфер',
       status: reserveViolations.length === 0,
       actual: reserveViolations.length === 0 ? 'СОБЛЮДЕН' : 'ДЕФИЦИТ',
-      violation: reserveViolations[0],
+      badge: reserveViolations.length > 1 ? `Нарушен в ${reserveViolations.length} гг.` : undefined,
+      violationSummary: reserveViolations.length === 1
+        ? reserveViolations[0].message
+        : (reserveViolations.length > 1
+            ? `Дефицит буфера в ${reserveViolations.length} гг.: ${reserveViolations.map((v) => `${v.year} г.`).join(', ')}`
+            : undefined),
     },
     {
       tag: '<емкость оту>',
@@ -80,7 +121,12 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       rule: '70 т / 120 т (ZBO)',
       status: storageViolations.length === 0,
       actual: storageViolations.length === 0 ? 'В НОРМЕ' : 'ПЕРЕПОЛНЕНО',
-      violation: storageViolations[0],
+      badge: storageViolations.length > 1 ? `Переполнение в ${storageViolations.length} гг.` : undefined,
+      violationSummary: storageViolations.length === 1
+        ? storageViolations[0].message
+        : (storageViolations.length > 1
+            ? `Переполнение баков в ${storageViolations.length} гг.: ${storageViolations.map((v) => `${v.year} г.`).join(', ')}`
+            : undefined),
     },
   ];
 
@@ -137,13 +183,19 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
         {cards.map((c, i) => (
           <div
             key={i}
+            onClick={() => {
+              if (!c.status) {
+                setShowAllDetails(true);
+              }
+            }}
             className={`h-full min-h-[135px] sm:min-h-[140px] p-3 sm:p-4 rounded-xl border transition-all flex flex-col items-center justify-between text-center relative ${
               i === 6 ? 'col-span-2 sm:col-span-1 md:col-span-2 lg:col-span-1' : ''
             } ${
               c.status
                 ? 'bg-[#0f0f12] border-neutral-800/90 hover:border-neutral-700'
-                : 'bg-[#1a080d] border-[#ff2a5f]/60 text-white shadow-lg shadow-[#ff2a5f]/10'
+                : 'bg-[#1a080d] border-[#ff2a5f]/60 text-white shadow-lg shadow-[#ff2a5f]/10 cursor-pointer hover:border-[#ff2a5f]'
             }`}
+            title={!c.status ? 'Нажмите, чтобы открыть подробный журнал нарушений' : undefined}
           >
             <div className="w-full flex items-center justify-between mb-1">
               <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono">{c.tag}</span>
@@ -165,15 +217,20 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
               >
                 {c.actual}
               </div>
+              {c.badge && (
+                <div className="text-[9px] text-[#ff6685] font-mono font-bold mt-0.5">
+                  {c.badge}
+                </div>
+              )}
             </div>
 
             <div className="w-full text-[10px] text-neutral-500 font-mono pt-1.5 border-t border-neutral-850">
               {c.rule}
             </div>
 
-            {!c.status && c.violation && (
-              <div className="mt-2 text-[10px] leading-tight text-rose-300 bg-rose-950/80 p-1.5 rounded border border-rose-800/80 font-mono w-full">
-                {c.violation.message}
+            {!c.status && c.violationSummary && (
+              <div className="mt-2 text-[10px] leading-tight text-rose-300 bg-rose-950/80 p-1.5 rounded border border-rose-800/80 font-mono w-full text-left break-words">
+                {c.violationSummary}
               </div>
             )}
           </div>

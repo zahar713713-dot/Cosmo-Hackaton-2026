@@ -558,10 +558,10 @@ export function runClientFallbackSimulation(
       violations.push({
         year: String(y),
         rule_code: 'CRITICAL_SERVICE_LEVEL',
-        rule_name: 'Критический уровень сервиса',
+        rule_name: 'Критический уровень обслуживания (SLA)',
         expected: '>= 99.0%',
-        actual: `${(slCrit * 100).toFixed(1)}%`,
-        message: `Год ${y}: дефицит критического топлива ${deficitCrit.toFixed(1)} т. Сервис ${(slCrit * 100).toFixed(1)}% < 99%.`,
+        actual: `${(slCrit * 100).toFixed(2)}%`,
+        message: `Год ${y}: Критический SLA равен ${(slCrit * 100).toFixed(2)}%, что ниже нормы 99.0%. Дефицит пилотируемых миссий: ${deficitCrit.toFixed(2)} т.`,
         is_violated: true,
       });
     }
@@ -570,10 +570,10 @@ export function runClientFallbackSimulation(
       violations.push({
         year: String(y),
         rule_code: 'TOTAL_SERVICE_LEVEL',
-        rule_name: 'Общий уровень сервиса',
+        rule_name: 'Совокупный уровень обслуживания (SLA)',
         expected: '>= 97.0%',
-        actual: `${(slTotal * 100).toFixed(1)}%`,
-        message: `Год ${y}: общий дефицит ${deficitTotal.toFixed(1)} т. Сервис ${(slTotal * 100).toFixed(1)}% < 97%.`,
+        actual: `${(slTotal * 100).toFixed(2)}%`,
+        message: `Год ${y}: Общий SLA составляет ${(slTotal * 100).toFixed(2)}%, что ниже обязательной нормы 97.0%. Дефицит: ${deficitTotal.toFixed(2)} т.`,
         is_violated: true,
       });
     }
@@ -582,10 +582,10 @@ export function runClientFallbackSimulation(
       violations.push({
         year: String(y),
         rule_code: 'STORAGE_CAPACITY_OVERFLOW',
-        rule_name: 'Емкость хранилища',
+        rule_name: 'Вместимость баков ОТУ',
         expected: `<= ${capacityMax} т`,
-        actual: `${endStock.toFixed(1)} т`,
-        message: `Год ${y}: переполнение бака на ${overflowAmt.toFixed(1)} т. Остаток ${endStock.toFixed(1)} т > ${capacityMax} т.`,
+        actual: `${endStock.toFixed(2)} т`,
+        message: `Год ${y}: Переполнение баков на ${overflowAmt.toFixed(2)} т. Конечный остаток ${endStock.toFixed(2)} т превышает предельную вместимость ${capacityMax} т.`,
         is_violated: true,
       });
     }
@@ -594,10 +594,10 @@ export function runClientFallbackSimulation(
       violations.push({
         year: String(y),
         rule_code: 'RESERVE_45_DAYS',
-        rule_name: '45-дневный резерв',
-        expected: `>= ${reqReserve.toFixed(1)} т`,
-        actual: `${currentStock.toFixed(1)} т`,
-        message: `Год ${y}: физический запас ${currentStock.toFixed(1)} т меньше 45-дневного норматива ${reqReserve.toFixed(1)} т.`,
+        rule_name: '45-дневный страховой буфер топлива',
+        expected: `>= ${reqReserve.toFixed(2)} т`,
+        actual: `${currentStock.toFixed(2)} т`,
+        message: `Год ${y}: Нарушен 45-дневный буфер: физический запас (${currentStock.toFixed(2)} т) меньше требуемых ${reqReserve.toFixed(2)} т.`,
         is_violated: true,
       });
     }
