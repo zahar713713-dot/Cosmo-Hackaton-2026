@@ -8,20 +8,22 @@ interface ConstraintAlertBarProps {
 
 export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulation }) => {
   const [showAllDetails, setShowAllDetails] = useState(false);
+  const [filterOnlyViolations, setFilterOnlyViolations] = useState(false);
 
   if (!simulation) return null;
 
   const { violations, summary_kpi } = simulation;
 
-  // Key checks analysis
-  const critViolations = violations.filter((v) => v.rule_code === 'CRITICAL_SERVICE_LEVEL');
-  const totViolations = violations.filter((v) => v.rule_code === 'TOTAL_SERVICE_LEVEL');
-  const capex37Violations = violations.filter((v) => v.rule_code === 'CAPEX_2037_LIMIT');
-  const capexTotViolations = violations.filter((v) => v.rule_code === 'CAPEX_TOTAL_LIMIT');
-  const reserveViolations = violations.filter((v) => v.rule_code === 'RESERVE_45_DAYS');
+  // Filter ONLY real violations where is_violated === true
+  const trueViolations = violations.filter((v) => v.is_violated);
+  const critViolations = violations.filter((v) => v.is_violated && v.rule_code === 'CRITICAL_SERVICE_LEVEL');
+  const totViolations = violations.filter((v) => v.is_violated && v.rule_code === 'TOTAL_SERVICE_LEVEL');
+  const capex37Violations = violations.filter((v) => v.is_violated && v.rule_code === 'CAPEX_2037_LIMIT');
+  const capexTotViolations = violations.filter((v) => v.is_violated && v.rule_code === 'CAPEX_TOTAL_LIMIT');
+  const reserveViolations = violations.filter((v) => v.is_violated && v.rule_code === 'RESERVE_45_DAYS');
   const storageViolations = violations.filter((v) => v.rule_code === 'STORAGE_CAPACITY_OVERFLOW');
-  const emergencyViolations = violations.filter((v) => v.rule_code === 'EMERGENCY_CONSECUTIVE_LIMIT');
-  const stressLossViolations = violations.filter((v) => v.rule_code === 'STRESS_LOSS_CEILING_BREACH');
+  const emergencyViolations = violations.filter((v) => v.is_violated && v.rule_code === 'EMERGENCY_CONSECUTIVE_LIMIT');
+  const stressLossViolations = violations.filter((v) => v.is_violated && v.rule_code === 'STRESS_LOSS_CEILING_BREACH');
 
   const cards = [
     {
@@ -61,7 +63,7 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       title: 'РЕЗЕРВ 45 ДНЕЙ',
       rule: 'Страховой буфер',
       status: reserveViolations.length === 0,
-      actual: reserveViolations.length === 0 ? 'НОРМА' : 'ДЕФИЦИТ',
+      actual: reserveViolations.length === 0 ? 'СОБЛЮДЕН' : 'ДЕФИЦИТ',
       violation: reserveViolations[0],
     },
     {
@@ -69,10 +71,14 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       title: 'ОБЪЕМ БАКОВ',
       rule: '70 т / 120 т (ZBO)',
       status: storageViolations.length === 0,
-      actual: storageViolations.length === 0 ? 'НОРМА' : 'ПЕРЕПОЛНЕНО',
+      actual: storageViolations.length === 0 ? 'В НОРМЕ' : 'ПЕРЕПОЛНЕНО',
       violation: storageViolations[0],
     },
   ];
+
+  const displayedAuditRecords = filterOnlyViolations
+    ? trueViolations
+    : violations;
 
   return (
     <section className="bg-[#0a0a0c] rounded-2xl border border-neutral-800 p-5 mb-6 shadow-2xl relative overflow-hidden">
@@ -87,7 +93,7 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
           ) : (
             <div className="flex items-center gap-2 bg-[#ff2a5f] text-white px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase animate-pulse shadow-lg shadow-[#ff2a5f]/20">
               <ShieldAlert className="w-3.5 h-3.5" />
-              <span>НАРУШЕНЫ ОГРАНИЧЕНИЯ КЕЙСА ({violations.length})</span>
+              <span>НАРУШЕНЫ ОГРАНИЧЕНИЯ КЕЙСА ({trueViolations.length})</span>
             </div>
           )}
           <span className="text-[11px] text-neutral-500 font-mono tracking-wide hidden md:inline">
@@ -99,7 +105,11 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
           onClick={() => setShowAllDetails(!showAllDetails)}
           className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-[#ccff00] transition font-mono border border-neutral-800 hover:border-neutral-600 px-3 py-1 rounded-full bg-neutral-900/60"
         >
-          <span>ПОДРОБНЫЙ АУДИТ ({violations.length})</span>
+          <span>
+            {trueViolations.length > 0
+              ? `НАРУШЕНИЯ (${trueViolations.length})`
+              : `ПОДРОБНЫЙ АУДИТ (${violations.length})`}
+          </span>
           {showAllDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5 text-[#ccff00]" />}
         </button>
       </div>
@@ -150,7 +160,6 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
         ))}
       </div>
 
-
       {/* Additional specific rule flags if violated */}
       {(emergencyViolations.length > 0 || stressLossViolations.length > 0) && (
         <div className="mt-4 flex flex-wrap gap-2">
@@ -178,29 +187,53 @@ export const ConstraintAlertBar: React.FC<ConstraintAlertBarProps> = ({ simulati
       {/* Expandable detailed audit list */}
       {showAllDetails && (
         <div className="mt-5 pt-4 border-t border-neutral-800 animate-fadeIn">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <span className="text-xs font-black uppercase tracking-wider text-neutral-300">
               ЖУРНАЛ КОНТРОЛЬНЫХ ОГРАНИЧЕНИЙ И ШТРАФОВ (КРИТЕРИЙ 19)
             </span>
-            <span className="text-[11px] text-neutral-500 font-mono">Всего записей: {violations.length}</span>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-1.5 text-[11px] text-neutral-400 cursor-pointer font-mono">
+                <input
+                  type="checkbox"
+                  checked={filterOnlyViolations}
+                  onChange={(e) => setFilterOnlyViolations(e.target.checked)}
+                  className="rounded border-neutral-700 bg-neutral-800 text-[#ccff00] focus:ring-0"
+                />
+                <span>Только нарушения</span>
+              </label>
+              <span className="text-[11px] text-neutral-500 font-mono">
+                Записей: {displayedAuditRecords.length} (Нарушений: {trueViolations.length})
+              </span>
+            </div>
           </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-            {violations.length === 0 ? (
+            {displayedAuditRecords.length === 0 ? (
               <div className="text-xs text-[#ccff00] p-3 rounded-xl bg-neutral-900/60 border border-neutral-800 font-mono">
                 ✓ Нарушений не зафиксировано. Программа поставок полностью удовлетворяет жестким ограничениям ТЗ.
               </div>
             ) : (
-              violations.map((v, i) => (
+              displayedAuditRecords.map((v, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-3 text-xs p-3 rounded-xl bg-[#14080b] border border-rose-900/60 font-mono"
+                  className={`flex items-start gap-3 text-xs p-3 rounded-xl font-mono border ${
+                    v.is_violated
+                      ? 'bg-[#14080b] border-rose-900/60'
+                      : 'bg-neutral-900/40 border-neutral-800/80 text-neutral-300'
+                  }`}
                 >
-                  <span className="text-xs font-black px-2 py-0.5 rounded-full bg-[#ff2a5f] text-white shrink-0">
-                    {v.rule_code}
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${
+                      v.is_violated
+                        ? 'bg-[#ff2a5f] text-white'
+                        : 'bg-emerald-950 text-emerald-400 border border-emerald-800/60'
+                    }`}
+                  >
+                    {v.is_violated ? 'НАРУШЕНИЕ' : 'В НОРМЕ'}
                   </span>
-                  <span className="text-neutral-300 flex-1">{v.message}</span>
-                  {v.year && <span className="text-neutral-500 font-mono">Год: {v.year}</span>}
+                  <span className="font-bold text-neutral-400 shrink-0">[{v.rule_code}]</span>
+                  <span className="flex-1 text-neutral-300">{v.message}</span>
+                  {v.year && <span className="text-neutral-500 shrink-0">Год: {v.year}</span>}
                 </div>
               ))
             )}
