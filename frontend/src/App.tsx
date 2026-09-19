@@ -54,7 +54,7 @@ function createDefaultChannelPlans(horizonYears: number[]): Record<number, Recor
     }
 
     // Contracted emergency reserve to satisfy 45-day reserve compliance
-    const req45d = Math.round((d * 45) / 365);
+    const req45d = Math.ceil((d * 45) / 365);
     const emergencyRes = Math.min(80, Math.max(20, req45d));
 
     plans[y] = {

@@ -153,7 +153,7 @@ def _optimize_regulatory(
 
         # Contracted emergency reserve to guarantee 45-day reserve compliance
         req_45d = d_tot * 45.0 / 365.0
-        emergency_res = min(80.0, max(20.0, round(req_45d, 1)))
+        emergency_res = min(80.0, max(20.0, float(np.ceil(req_45d))))
 
         orders = {
             ChannelID.EARTH_CORE: ChannelOrder(
@@ -245,7 +245,7 @@ def _optimize_nasa_milp(
 
         # Emergency reserve sized precisely to satisfy the 45-day safety mandate
         req_45d = d_tot * 45.0 / 365.0
-        emergency_res = min(80.0, max(20.0, round(req_45d, 1)))
+        emergency_res = min(80.0, max(20.0, float(np.ceil(req_45d))))
 
         orders = {
             ChannelID.EARTH_CORE: ChannelOrder(
