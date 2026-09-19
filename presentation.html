@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Топливный космоконтур 2035 // Презентация проекта</title>
+  <title>Топливный космоконтур 2035 — Презентация проекта</title>
   <style>
     * {
       box-sizing: border-box;
@@ -12,8 +12,8 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     body {
-      background-color: #050507;
-      color: #ffffff;
+      background-color: #f1f5f9;
+      color: #0f172a;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -25,67 +25,68 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 30px;
+      padding: 24px;
       position: relative;
     }
     .slide {
       display: none;
       width: 100%;
-      max-width: 1300px;
-      height: 85vh;
-      background: #0a0a0d;
-      border: 1px solid #1f1f24;
-      border-radius: 24px;
-      padding: 40px;
+      max-width: 1320px;
+      height: 86vh;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 36px 40px;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
-      animation: fadeIn 0.3s ease-in-out;
+      box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.08);
+      animation: fadeIn 0.25s ease-in-out;
       position: relative;
     }
     .slide.active {
       display: flex;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.99); }
+      from { opacity: 0; transform: scale(0.995); }
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Top Bar of Slide */
+    /* Top Header */
     .slide-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      border-bottom: 1px solid #1f1f24;
+      border-bottom: 2px solid #e2e8f0;
       padding-bottom: 16px;
       margin-bottom: 20px;
     }
     .slide-tag {
-      font-family: monospace;
       font-size: 11px;
-      color: #ccff00;
-      letter-spacing: 1px;
+      font-weight: 800;
+      color: #0284c7;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
     }
     .slide-title {
-      font-size: 26px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #ffffff;
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
       margin-top: 4px;
+      letter-spacing: -0.3px;
     }
     .slide-time {
-      font-family: monospace;
       font-size: 12px;
-      padding: 4px 12px;
+      font-weight: 700;
+      padding: 6px 14px;
       border-radius: 9999px;
-      background: #141418;
-      border: 1px solid #27272f;
-      color: #a1a1aa;
+      background: #e2e8f0;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    /* Content Layouts */
+    /* Layouts */
     .slide-body {
       flex: 1;
       display: flex;
@@ -97,131 +98,163 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       gap: 16px;
     }
+    .col-3 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Cards */
     .card {
-      background: #0f0f14;
-      border: 1px solid #1f1f24;
-      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
       padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      position: relative;
     }
-    .card-accent {
-      background: #0f140a;
-      border: 1px solid rgba(204, 255, 0, 0.3);
-    }
+    .card-top-blue { border-top: 4px solid #0284c7; }
+    .card-top-green { border-top: 4px solid #10b981; }
+    .card-top-amber { border-top: 4px solid #f59e0b; }
+
     .card-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       text-transform: uppercase;
-      color: #ccff00;
-      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      color: #0f172a;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    .card-title-blue { color: #0369a1; }
+    .card-title-green { color: #059669; }
+    .card-title-amber { color: #b45309; }
 
-    /* Bottom Nav */
+    .metric-chip {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      flex: 1;
+    }
+    .metric-val {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .metric-val-green { color: #059669; }
+    .metric-val-blue { color: #0284c7; }
+    .metric-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .metric-sub {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Lists */
+    ul.item-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    ul.item-list li {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #334155;
+      position: relative;
+      padding-left: 18px;
+    }
+    ul.item-list li::before {
+      content: "•";
+      color: #0284c7;
+      font-size: 16px;
+      position: absolute;
+      left: 0;
+      top: -2px;
+    }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    table.data-table th {
+      background: #1e293b;
+      color: #ffffff;
+      text-align: left;
+      padding: 9px 12px;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    table.data-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+    table.data-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    table.data-table tr.highlight td {
+      background: #ecfdf5;
+      color: #059669;
+      font-weight: 700;
+    }
+
+    /* Footer */
     .footer-bar {
       height: 60px;
-      background: #070709;
-      border-top: 1px solid #1f1f24;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 40px;
+      box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.02);
     }
     .btn {
-      background: #141418;
-      color: #ffffff;
-      border: 1px solid #27272f;
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
       padding: 8px 18px;
       border-radius: 9999px;
       font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
+      font-weight: 700;
       cursor: pointer;
-      font-family: monospace;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
     .btn:hover {
-      background: #27272f;
-      border-color: #ffffff;
+      background: #e2e8f0;
     }
     .btn-primary {
-      background: #ccff00;
-      color: #000000;
-      border: 1px solid #ccff00;
+      background: #0284c7;
+      color: #ffffff;
+      border: 1px solid #0284c7;
     }
     .btn-primary:hover {
-      background: #b3e600;
+      background: #0369a1;
     }
     .indicator {
-      font-family: monospace;
       font-size: 12px;
-      color: #71717a;
-    }
-
-    /* Data Highlights */
-    .metric-num {
-      font-family: monospace;
-      font-size: 36px;
-      font-weight: 900;
-      color: #ffffff;
-      line-height: 1;
-    }
-    .metric-num-lime {
-      color: #ccff00;
-    }
-    .metric-label {
-      font-family: monospace;
-      font-size: 11px;
-      color: #a1a1aa;
-      text-transform: uppercase;
-      margin-top: 6px;
-    }
-    ul.bullet-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    ul.bullet-list li {
-      font-size: 13px;
-      line-height: 1.4;
-      color: #d4d4d8;
-      position: relative;
-      padding-left: 18px;
-    }
-    ul.bullet-list li::before {
-      content: "■";
-      color: #ccff00;
-      position: absolute;
-      left: 0;
-      font-size: 10px;
-      top: 2px;
-    }
-    table.data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: monospace;
-      font-size: 11px;
-    }
-    table.data-table th {
-      background: #141418;
-      color: #a1a1aa;
-      text-align: left;
-      padding: 8px;
-      border-bottom: 1px solid #27272f;
-    }
-    table.data-table td {
-      padding: 8px;
-      border-bottom: 1px solid #18181b;
-      color: #ffffff;
-    }
-    table.data-table tr.highlight td {
-      color: #ccff00;
-      font-weight: bold;
+      font-weight: 700;
+      color: #64748b;
     }
   </style>
 </head>
@@ -233,56 +266,40 @@
     <div class="slide active" id="slide-1">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 01 // концепция системы&gt;</span>
-          <h1 class="slide-title">ТОПЛИВНЫЙ КОСМОКОНТУР 2035 // СИТУАЦИОННЫЙ ЦЕНТР ОТУ</h1>
+          <span class="slide-tag">Слайд 1 // Стратегия и Архитектура</span>
+          <h1 class="slide-title">Топливный космоконтур 2035: Ситуационный центр ОТУ</h1>
         </div>
-        <span class="slide-time">0:00 — 0:35</span>
+        <span class="slide-time">⏱ 0:00 — 0:35</span>
       </div>
 
       <div class="slide-body">
         <div class="col-2">
-          <div class="card card-accent">
-            <div class="card-title">🎯 Стратегический вызов программы</div>
-            <p style="font-size: 13px; line-height: 1.5; color: #d4d4d8;">
-              Создание постоянно действующего орбитального топливного узла (ОТУ) в цислунарном пространстве на <b>2035–2040 годы</b> 
-              для заправки лунных посадочных модулей, пилотируемой станции и космических буксиров.
+          <div class="card card-top-blue" style="flex: 1;">
+            <div class="card-title card-title-blue">🎯 Стратегическая цель программы</div>
+            <p style="font-size: 12.5px; line-height: 1.5; color: #334155; margin-bottom: 14px;">
+              Гарантированное и экономически эффективное снабжение цислунарного Орбитального Топливного Узла (ОТУ) 
+              в <b>2035–2040 гг.</b> для обеспечения лунной инфраструктуры, буксиров и пилотируемых экспедиций.
             </p>
-          </div>
-
-          <div class="card">
-            <div class="card-title">⚠️ Логистические барьеры кейса</div>
-            <ul class="bullet-list">
-              <li><b>Высокая стоимость земных пусков:</b> 6.2–8.9 млн у.е./т при плече предзаказа до 12 месяцев.</li>
-              <li><b>Жесткие директивы CAPEX:</b> строго &le; 1 800 млн у.е. до 2037 г. и &le; 2 800 млн суммарно.</li>
-              <li><b>Безусловная безопасность:</b> критический SLA &ge; 99.0% и неснижаемый 45-дневный буфер.</li>
+            <div class="card-title card-title-amber" style="font-size: 12px;">⚠️ Ключевые барьеры и директивы ТЗ:</div>
+            <ul class="item-list">
+              <li><b>Высокая цена Земли:</b> 6.2–8.9 млн у.е./т при плече планирования до 12 месяцев.</li>
+              <li><b>Потолок CAPEX:</b> Строго &le; 1 800 млн у.е. до конца 2037 г. и &le; 2 800 млн суммарно.</li>
+              <li><b>Штрафы Take-or-Pay:</b> Оплата 70% от бронирования при любом недоборе.</li>
+              <li><b>Безусловная безопасность:</b> Критический SLA &ge; 99.0% и неснижаемый 45-дневный буфер.</li>
             </ul>
           </div>
         </div>
 
         <div class="col-2">
-          <div class="card" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-            <div class="card-title">🏛️ Отечественный технологический стек</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-              <div style="background: #141418; padding: 12px; border-radius: 10px;">
-                <div class="metric-num metric-num-lime" style="font-size: 24px;">Python 3.12</div>
-                <div class="metric-label">Pydantic v2 ядро</div>
-              </div>
-              <div style="background: #141418; padding: 12px; border-radius: 10px;">
-                <div class="metric-num" style="font-size: 24px;">FastAPI</div>
-                <div class="metric-label">REST API + OpenAPI</div>
-              </div>
-              <div style="background: #141418; padding: 12px; border-radius: 10px;">
-                <div class="metric-num" style="font-size: 24px;">React 19</div>
-                <div class="metric-label">Vite + Tailwind CSS</div>
-              </div>
-              <div style="background: #141418; padding: 12px; border-radius: 10px;">
-                <div class="metric-num metric-num-lime" style="font-size: 24px;">38 Тестов</div>
-                <div class="metric-label">100% покрытие pytest</div>
-              </div>
-            </div>
-            <div style="margin-top: 15px; font-family: monospace; font-size: 11px; color: #a1a1aa; border-top: 1px solid #1f1f24; pt: 10px;">
-              ⚡ Мгновенный отклик: пересчет материального баланса &lt; 20 мс // Нулевые мок-данные.
-            </div>
+          <div class="card card-top-green" style="flex: 1;">
+            <div class="card-title card-title-green">🏛️ Инженерный стек и надежность решения</div>
+            <ul class="item-list">
+              <li><b>Python 3.12 + Pydantic v2:</b> Строго типизированное детерминированное ядро без скрытых эвристик.</li>
+              <li><b>FastAPI + REST API:</b> Высокоскоростной API-слой с валидацией входных параметров и русской локализацией.</li>
+              <li><b>React 19 + TypeScript + Vite:</b> Реактивное рабочее место оператора с мгновенным откликом (&lt; 200 мс).</li>
+              <li><b>38 Автоматических тестов pytest:</b> 100% покрытие физического баланса, сходимость 2035 года до 10⁻⁴ т.</li>
+              <li><b>Мульти-ядерная оптимизация:</b> Поддержка 3 алгоритмов (Регламент, NASA MILP, Minimax) с живым переключением.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -292,84 +309,51 @@
     <div class="slide" id="slide-2">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 02 // математическое ядро&gt;</span>
-          <h1 class="slide-title">ФИЗИЧЕСКИЙ МАТЕРИАЛЬНЫЙ БАЛАНС И ВЕРИФИКАЦИЯ</h1>
+          <span class="slide-tag">Слайд 2 // Физика Узла и Верификация</span>
+          <h1 class="slide-title">Материальный баланс и сходимость контрольного примера 2035 года</h1>
         </div>
-        <span class="slide-time">0:35 — 1:10</span>
+        <span class="slide-time">⏱ 0:35 — 1:10</span>
       </div>
 
       <div class="slide-body">
         <div class="col-2">
-          <div class="card">
-            <div class="card-title">⚖️ Уравнение физического баланса</div>
-            <div style="background: #000; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 12px; color: #ccff00; margin-bottom: 10px;">
-              End_Stock = Start_Stock + Gross_Delivery - Losses - Served_Demand
+          <div class="card card-top-blue" style="flex: 1;">
+            <div class="card-title card-title-blue">⚖️ Формула сохранения физического баланса</div>
+            <div style="background: #f1f5f9; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; color: #0f172a; margin-bottom: 12px;">
+              End_Stock = Start_Stock + Gross_In - Losses - Served
             </div>
-            <ul class="bullet-list">
-              <li><b>Потери throughput:</b> начисляются строго 1 раз на валовый приход (4.5% базовые, 1.2% с ZBO).</li>
-              <li><b>Исключение отрицательного остатка:</b> при дефиците End_Stock = 0.0, а дефицит изолируется в отдельную метрику.</li>
-              <li><b>Приоритет экипажей:</b> критический спрос удовлетворяется первым: Served_Crit = min(Served, Demand_Crit).</li>
+            <ul class="item-list">
+              <li><b>Потери Throughput (4.5% / 1.2%):</b> Начисляются строго 1 раз на валовый приход топлива. Потери на остаток в баке разделены.</li>
+              <li><b>Неотрицательность остатков:</b> Физический остаток &ge; 0. При нехватке топлива дефицит изолируется в Unmet Demand.</li>
+              <li><b>Приоритет критического спроса:</b> Пилотируемый сектор обеспечивается первым: Served_Crit = min(Served, Demand_Crit).</li>
+              <li><b>Защита Take-or-Pay:</b> Оплачиваемый объем = max(Order, 0.70 &times; Reserved).</li>
             </ul>
-          </div>
-
-          <div class="card card-accent">
-            <div class="card-title">🛡️ Защита от двойного счета Take-or-Pay</div>
-            <div style="font-family: monospace; font-size: 12px; color: #fff;">
-              Billable_Vol = max(Order_Volume, 0.70 &times; Reserved_Capacity)
-            </div>
-            <div style="font-size: 11px; color: #a1a1aa; margin-top: 6px;">
-              Штраф начисляется только при недоборе лимита, исключая двойную оплату.
-            </div>
           </div>
         </div>
 
         <div class="col-2">
-          <div class="card" style="flex: 1;">
-            <div class="card-title">🔬 Верификация контрольного примера 2035 года</div>
+          <div class="card card-top-green" style="flex: 1;">
+            <div class="card-title card-title-green">🔬 Сходимость контрольного примера 2035 г.</div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Параметр бенчмарка</th>
+                  <th>Параметр проверки</th>
                   <th>ТЗ Регламент</th>
-                  <th>Расчет ядра</th>
+                  <th>Наше ядро</th>
                   <th>Дельта</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Начальный запас (45 дней)</td>
-                  <td>12.3288 т</td>
-                  <td>12.3288 т</td>
-                  <td style="color:#ccff00;">0.0000</td>
-                </tr>
-                <tr>
-                  <td>Заказ Earth-Core</td>
-                  <td>95.0000 т</td>
-                  <td>95.0000 т</td>
-                  <td style="color:#ccff00;">0.0000</td>
-                </tr>
-                <tr>
-                  <td>Потери валовые (4.5%)</td>
-                  <td>4.2750 т</td>
-                  <td>4.2750 т</td>
-                  <td style="color:#ccff00;">0.0000</td>
-                </tr>
-                <tr>
-                  <td>Отпуск на спрос (в т.ч. крит 80)</td>
-                  <td>100.0000 т</td>
-                  <td>100.0000 т</td>
-                  <td style="color:#ccff00;">0.0000</td>
-                </tr>
-                <tr class="highlight">
-                  <td>Конечный остаток на 31.12</td>
-                  <td>3.0538 т</td>
-                  <td>3.0538 т</td>
-                  <td>0.0000 ✅</td>
-                </tr>
+                <tr><td>Начальный запас (45 дн.)</td><td>12.3288 т</td><td>12.3288 т</td><td>0.0000 т</td></tr>
+                <tr><td>Заказ Earth-Core</td><td>95.0000 т</td><td>95.0000 т</td><td>0.0000 т</td></tr>
+                <tr><td>Потери валовые (4.5%)</td><td>4.2750 т</td><td>4.2750 т</td><td>0.0000 т</td></tr>
+                <tr><td>Полезный приход</td><td>90.7250 т</td><td>90.7250 т</td><td>0.0000 т</td></tr>
+                <tr><td>Отпуск на спрос</td><td>100.0000 т</td><td>100.0000 т</td><td>0.0000 т</td></tr>
+                <tr class="highlight"><td>Конечный остаток на 31.12</td><td>3.0538 т</td><td>3.0538 т</td><td>0.0000 т ✅</td></tr>
               </tbody>
             </table>
-            <div style="margin-top: 15px; padding: 10px; background: #141418; border-radius: 8px; font-family: monospace; font-size: 11px; color: #ccff00;">
-              ✓ Тест `test_2035_official_benchmark_example` пройден с точностью 10^-4.
+            <div style="margin-top: 14px; font-size: 11.5px; font-weight: 700; color: #059669;">
+              ✅ 100% совпадение подтверждено автоматическим тестом test_balance.py (погрешность &lt; 10⁻⁴ т).
             </div>
           </div>
         </div>
@@ -380,56 +364,52 @@
     <div class="slide" id="slide-3">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 03 // инвестиционная стратегия&gt;</span>
-          <h1 class="slide-title">ИНВЕСТИЦИОННЫЕ ВОРОТА (GATE-ПОДХОД)</h1>
+          <span class="slide-tag">Слайд 3 // Управление CAPEX и Проектами</span>
+          <h1 class="slide-title">Инвестиционная стратегия: Трехшлюзовая модель (Gate-подход)</h1>
         </div>
-        <span class="slide-time">1:10 — 1:45</span>
+        <span class="slide-time">⏱ 1:10 — 1:45</span>
       </div>
 
       <div class="slide-body">
-        <div class="col-2">
-          <div class="card card-accent">
-            <div class="card-title">ШЛЮЗ 01: ZBO-МОДЕРНИЗАЦИЯ (2036 Г.)</div>
-            <div class="metric-num metric-num-lime" style="font-size: 26px;">180 МЛН У.Е.</div>
-            <div class="metric-label">OPEX: +12 млн/год // Потери: 4.5% &rarr; 1.2% // Баки: 70 &rarr; 120 т</div>
-            <p style="font-size: 12px; color: #d4d4d8; margin-top: 8px;">
-              <b>Стратегическое решение:</b> критически необходимо к утверждению. Без ZBO невозможно пройти обязательный стресс-тест ТЗ (потери превышают потолок &le; 2.0%).
-            </p>
-          </div>
-
-          <div class="card">
-            <div class="card-title">ШЛЮЗ 03: ОПЦИОН EARTH-NEW (РЕЗЕРВ)</div>
-            <div class="metric-num" style="font-size: 26px;">360 МЛН У.Е.</div>
-            <div class="metric-label">90 млн опцион (2035) + 270 млн ввод (2036)</div>
-            <p style="font-size: 12px; color: #a1a1aa; margin-top: 8px;">
-              Резервный инструмент страхования на случай задержки лунной программы более чем на 2 года.
-            </p>
+        <div class="col-3">
+          <div class="card card-top-blue" style="flex: 1;">
+            <div class="card-title card-title-blue">ШЛЮЗ 01: ZBO-МОДЕРНИЗАЦИЯ</div>
+            <div class="metric-val" style="font-size: 22px;">180 млн у.е.</div>
+            <div class="metric-lbl" style="color: #059669; font-weight: 800;">Обязательно к вводу (2036)</div>
+            <ul class="item-list" style="margin-top: 12px;">
+              <li>OPEX обслуживания: +12 млн у.е./год.</li>
+              <li>Снижение потерь с 4.5% до 1.2%.</li>
+              <li>Расширение емкости баков с 70 до 120 тонн.</li>
+              <li><b>Обоснование:</b> Без ZBO невозможно пройти обязательный стресс-тест ТЗ (потери выше нормы &le; 2.0%).</li>
+            </ul>
           </div>
         </div>
 
-        <div class="col-2">
-          <div class="card" style="flex: 1;">
-            <div class="card-title">ШЛЮЗ 02: ЛУННЫЙ КОМПЛЕКС LUNAR-ISRU</div>
-            <div class="metric-num metric-num-lime" style="font-size: 28px;">1 250 МЛН У.Е.</div>
-            <div class="metric-label">График траншей: 250 млн (2035) + 500 млн (2036) + 500 млн (2037)</div>
-            
-            <div style="margin: 15px 0; background: #141418; padding: 12px; border-radius: 10px;">
-              <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 12px; margin-bottom: 4px;">
-                <span>Суммарный CAPEX до 2037 г.:</span>
-                <b style="color:#ccff00;">1 430 млн у.е.</b>
-              </div>
-              <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 12px;">
-                <span>Лимит ТЗ первого этапа:</span>
-                <b style="color:#ffffff;">1 800 млн у.е.</b>
-              </div>
-              <div style="font-size: 11px; color: #a1a1aa; margin-top: 6px;">
-                Запас финансовой прочности: <b>+370 млн у.е.</b>
-              </div>
-            </div>
+        <div class="col-3">
+          <div class="card card-top-green" style="flex: 1;">
+            <div class="card-title card-title-green">ШЛЮЗ 02: LUNAR-ISRU (ЛУНА)</div>
+            <div class="metric-val" style="font-size: 22px; color: #059669;">1 250 млн у.е.</div>
+            <div class="metric-lbl" style="color: #059669; font-weight: 800;">Главный драйвер окупаемости</div>
+            <ul class="item-list" style="margin-top: 12px;">
+              <li>Транши: 250 (35 г.) + 500 (36 г.) + 500 (37 г.).</li>
+              <li>Ввод в строй: строго с 2038 г. (до 120 т/год).</li>
+              <li>Тариф 3.0 млн у.е./т без бронирования.</li>
+              <li><b>Запас CAPEX:</b> 1 430 млн у.е. при лимите 1 800 млн (запас +370 млн у.е.). Окупается к 2040 г.</li>
+            </ul>
+          </div>
+        </div>
 
-            <p style="font-size: 12px; line-height: 1.4; color: #d4d4d8;">
-              <b>Окупаемость:</b> с 2038 г. поставка 120 т/год лунного топлива по себестоимости 3.0 млн/т (против 6.2–8.9 млн с Земли) окупает проект к 2040 году и создает суверенный замкнутый контур.
-            </p>
+        <div class="col-3">
+          <div class="card card-top-amber" style="flex: 1;">
+            <div class="card-title card-title-amber">ШЛЮЗ 03: ОПЦИОН EARTH-NEW</div>
+            <div class="metric-val" style="font-size: 22px; color: #b45309;">360 млн у.е.</div>
+            <div class="metric-lbl" style="color: #b45309; font-weight: 800;">Резервный опцион (Заморожен)</div>
+            <ul class="item-list" style="margin-top: 12px;">
+              <li>Опцион: 90 млн (35 г.) + ввод 270 млн (36 г.).</li>
+              <li>Мощность: 130 т/год по тарифу 7.1 млн у.е./т.</li>
+              <li><b>Обоснование:</b> В базовом плане не нужен благодаря лунному ISRU.</li>
+              <li>Служит страховкой при задержке Луны &gt; 2 лет.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -439,34 +419,52 @@
     <div class="slide" id="slide-4">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 04 // живое демо&gt;</span>
-          <h1 class="slide-title">РАБОЧЕЕ МЕСТО ОПЕРАТОРА ОТУ (ДЕМОНСТРАЦИЯ)</h1>
+          <span class="slide-tag">Слайд 4 // Мульти-ядерная Оптимизация</span>
+          <h1 class="slide-title">Сравнительный анализ алгоритмов: Экономия 1.096 млрд у.е.</h1>
         </div>
-        <span class="slide-time">1:45 — 2:45</span>
+        <span class="slide-time">⏱ 1:45 — 2:30</span>
       </div>
 
-      <div class="slide-body">
-        <div class="col-2">
-          <div class="card" style="flex: 1;">
-            <div class="card-title">🖥️ Архитектура единого экрана (Cockpit)</div>
-            <ul class="bullet-list">
-              <li><b>Интегральные KPI:</b> LCC, NPV, спрос, физический дефицит, уровень потерь.</li>
-              <li><b>Контроль 10 ограничений:</b> живые алерты SLA &ge; 99%, баков 120 т, буфера 45 дней.</li>
-              <li><b>Слайдеры отбора и брони:</b> раздельное управление по 5 каналам доставки с подсветкой Take-or-Pay.</li>
-              <li><b>4 интерактивных графика Recharts:</b> баланс поставок, траектория бака, структура затрат, стресс-дельта.</li>
-            </ul>
+      <div class="slide-body" style="flex-direction: column;">
+        <div style="display: flex; gap: 16px;">
+          <div class="metric-chip" style="border-top: 4px solid #10b981;">
+            <div class="metric-val metric-val-green">-1 096.8 млн</div>
+            <div class="metric-lbl">Экономия NPV LCC (-11.81%)</div>
+            <div class="metric-sub">Целевое ядро NASA MILP</div>
+          </div>
+          <div class="metric-chip" style="border-top: 4px solid #10b981;">
+            <div class="metric-val metric-val-green">0.0 млн у.е.</div>
+            <div class="metric-lbl">Штрафы Take-or-Pay ликвидированы</div>
+            <div class="metric-sub">Заказ равен бронированию</div>
+          </div>
+          <div class="metric-chip" style="border-top: 4px solid #0284c7;">
+            <div class="metric-val metric-val-blue">100.0%</div>
+            <div class="metric-lbl">Критический SLA экипажей</div>
+            <div class="metric-sub">Совокупный SLA 99.8%</div>
           </div>
         </div>
 
-        <div class="col-2">
-          <div class="card card-accent" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 10px;">⚡</div>
-            <div class="metric-num metric-num-lime" style="font-size: 28px;">ПЕРЕХОД К ЖИВОМУ ДЕМО</div>
-            <p style="font-size: 13px; color: #d4d4d8; max-width: 400px; margin-top: 10px;">
-              Показ реактивности ядра в браузере (http://localhost:3000):<br/>
-              <b>Стресс-тест &rarr; ZBO-переключатель &rarr; Take-or-Pay отклик.</b>
-            </p>
-          </div>
+        <table class="data-table" style="margin-top: 8px;">
+          <thead>
+            <tr>
+              <th>Показатель эффективности</th>
+              <th>ТЗ Регламент (Baseline)</th>
+              <th>NASA MILP (Целевое) ★</th>
+              <th>Minimax Robust (Вальд)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Критический SLA (пилотируемый)</td><td>100.0%</td><td>100.0%</td><td>100.0%</td></tr>
+            <tr><td>Совокупный SLA программы</td><td>98.8%</td><td>99.8%</td><td>99.5%</td></tr>
+            <tr><td>Недисконтированный LCC (2035–2040)</td><td>11 483.0 млн</td><td>10 112.4 млн</td><td>11 950.0 млн</td></tr>
+            <tr><td>Дисконтированный LCC (NPV r=8%)</td><td>9 284.7 млн</td><td>8 187.9 млн</td><td>9 540.0 млн</td></tr>
+            <tr class="highlight"><td>Экономия бюджета (NPV дельта)</td><td>0.0 млн (База)</td><td>-1 096.8 млн у.е. (-11.81%) ★</td><td>+255.3 млн (+2.7%)</td></tr>
+            <tr><td>Штрафы Take-or-Pay</td><td>147.2 млн</td><td>0.0 млн (100% защита)</td><td>0.0 млн</td></tr>
+            <tr><td>Логика формирования заказов</td><td>Фиксированные квоты</td><td>MILP оптимизация потоков</td><td>Худший сценарий (буфер 60 дн)</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size: 11px; font-weight: 700; color: #334155; margin-top: 4px;">
+          💡 Вывод: Ядро NASA MILP превосходит базовый регламент по всем параметрам, высвобождая более 1.09 млрд у.е.
         </div>
       </div>
     </div>
@@ -475,79 +473,36 @@
     <div class="slide" id="slide-5">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 05 // инновация и вау-эффект&gt;</span>
-          <h1 class="slide-title">МУЛЬТИ-ЯДЕРНАЯ ОПТИМИЗАЦИЯ // NASA SPACE LOGISTICS</h1>
+          <span class="slide-tag">Слайд 5 // Операционный Контур</span>
+          <h1 class="slide-title">Интерфейс ситуационного центра и план демонстрации</h1>
         </div>
-        <span class="slide-time">2:45 — 3:20</span>
+        <span class="slide-time">⏱ 2:30 — 3:05</span>
       </div>
 
       <div class="slide-body">
         <div class="col-2">
-          <div class="card card-accent">
-            <div class="card-title">🚀 NASA Space Logistics (MILP) ★ ЦЕЛЕВОЕ ЯДРО</div>
-            <div class="metric-num metric-num-lime" style="font-size: 38px;">-11.81% NPV</div>
-            <div class="metric-label">Экономия LCC: более 1 096 млн у.е. при 100% SLA</div>
-            <p style="font-size: 12px; color: #d4d4d8; margin-top: 8px;">
-              Методология MIT / NASA Glenn (*AIAA Space Logistics Architecture*). Многопериодное линейное программирование:
-              устраняет штрафы Take-or-Pay (Reserved = Order) и максимизирует выборку лунного топлива 120 т/год.
-            </p>
-          </div>
-
-          <div class="card">
-            <div class="card-title">🛡️ Робастный Minimax (Критерий Вальда)</div>
-            <div class="metric-num" style="font-size: 24px;">Буфер 60 дней</div>
-            <div class="metric-label">Emergency 30 т // Живучесть при шоках +20%</div>
-            <p style="font-size: 12px; color: #a1a1aa; margin-top: 6px;">
-              Минимизирует максимальный ущерб, диверсифицируя закупки через Earth-Flex без Take-or-Pay.
-            </p>
+          <div class="card card-top-blue" style="flex: 1;">
+            <div class="card-title card-title-blue">🖥️ Функционал веб-приложения оператора</div>
+            <ul class="item-list">
+              <li><b>Селектор алгоритмов:</b> Переключение между Регламентом, NASA MILP и Минимаксом за ~200 мс.</li>
+              <li><b>Светофор 10 ограничений ТЗ:</b> Мгновенный контроль SLA &ge; 99%, лимитов CAPEX 1800/2800 млн, емкости бака 120 т.</li>
+              <li><b>Слайдеры отбора и бронирования:</b> Интерактивное управление каналами Earth, Flex, ISRU с контролем Take-or-Pay 70%.</li>
+              <li><b>4 Интерактивных графика:</b> Траектория остатка, структура LCC, материальный баланс и дельта стресс-теста.</li>
+              <li><b>Экспорт в XLSX:</b> Скачивание полной книги Excel на 7 листов с формулами в 1 клик.</li>
+            </ul>
           </div>
         </div>
 
         <div class="col-2">
-          <div class="card" style="flex: 1;">
-            <div class="card-title">📊 Сравнительная таблица математических ядер</div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Метрика программы</th>
-                  <th>Регламент ТЗ</th>
-                  <th>NASA MILP</th>
-                  <th>Minimax</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Критический SLA</td>
-                  <td>100.0%</td>
-                  <td>100.0%</td>
-                  <td>100.0%</td>
-                </tr>
-                <tr>
-                  <td>Общий SLA</td>
-                  <td>98.8%</td>
-                  <td style="color:#ccff00;font-weight:bold;">99.8%</td>
-                  <td>99.5%</td>
-                </tr>
-                <tr>
-                  <td>Недисконтированные затраты</td>
-                  <td>11 483 млн</td>
-                  <td style="color:#ccff00;font-weight:bold;">10 112 млн</td>
-                  <td>11 950 млн</td>
-                </tr>
-                <tr class="highlight">
-                  <td>Приведенные затраты (NPV)</td>
-                  <td>9 284.7 млн</td>
-                  <td>8 187.9 млн</td>
-                  <td>9 540 млн</td>
-                </tr>
-                <tr class="highlight">
-                  <td>Экономия бюджета программы</td>
-                  <td>База (0%)</td>
-                  <td>-11.81% (1.09 млрд)</td>
-                  <td>Запас +2.7%</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="card card-top-green" style="flex: 1;">
+            <div class="card-title card-title-green">⚡ План показа живой системы на стенде</div>
+            <ul class="item-list">
+              <li><b>Шаг 1: Базовый режим NASA MILP:</b> Демонстрация нулевых штрафов, NPV 8.188 млрд и зеленого статуса всех 10 лимитов.</li>
+              <li><b>Шаг 2: Сравнение с Регламентом:</b> Наглядная дельта в 1.096 млрд у.е. из-за неоптимального бронирования.</li>
+              <li><b>Шаг 3: Активация стресс-теста ТЗ:</b> Шок спроса +15%, срез ISRU, подтверждение потерь 1.2% (норма &le; 2.0%).</li>
+              <li><b>Шаг 4: Тест отказа ZBO:</b> Мгновенное срабатывание красного алерта нарушения емкости и потерь.</li>
+              <li><b>Шаг 5: Экспорт в Excel:</b> Скачивание официального отчета за 1 секунду.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -557,63 +512,39 @@
     <div class="slide" id="slide-6">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 06 // стресс-тесты и риски&gt;</span>
-          <h1 class="slide-title">СТРЕСС-ТЕСТИРОВАНИЕ И МАТРИЦА РИСКОВ</h1>
+          <span class="slide-tag">Слайд 6 // Надежность и Риск-менеджмент</span>
+          <h1 class="slide-title">Стресс-тестирование и матрица парирования рисков</h1>
         </div>
-        <span class="slide-time">3:20 — 3:45</span>
+        <span class="slide-time">⏱ 3:05 — 3:45</span>
       </div>
 
-      <div class="slide-body">
-        <div class="col-2">
-          <div class="card card-accent">
-            <div class="card-title">⚡ Обязательный стресс-тест ТЗ (2038–2040)</div>
-            <ul class="bullet-list">
-              <li><b>Шоки:</b> спрос +15%, цены Earth-Core/Flex +25%, добыча ISRU срезана до 55%/75%.</li>
-              <li><b>Потери:</b> 1.2% (благодаря ZBO выдержан потолок &le; 2.0%).</li>
-              <li><b>Критический SLA:</b> 100.0% (пилотируемый дефицит = 0.0 т).</li>
-              <li><b>Совокупный SLA:</b> 97.4% (норматив &ge; 97.0% соблюден).</li>
-            </ul>
-          </div>
-
-          <div class="card">
-            <div class="card-title">🌍 Бонус: Геополитический шок (+5 баллов)</div>
-            <p style="font-size: 12px; color: #d4d4d8;">
-              Парирование санкций и скачка земных тарифов до +50% за счет ускоренного перехода на лунный суверенитет.
-            </p>
-          </div>
+      <div class="slide-body" style="flex-direction: column;">
+        <div class="card card-top-amber">
+          <div class="card-title card-title-amber">⚡ Результаты Обязательного стресс-теста ТЗ (2038–2040 гг.)</div>
+          <p style="font-size: 12px; color: #334155; line-height: 1.45;">
+            <b>Параметры шока:</b> Спрос +15% (38–40), тарифы Земли +25% (38–39), срез лунного ISRU до 55% и 75%.<br />
+            • <b>Потери Throughput: 1.2%</b> — строго выдержан норматив ТЗ (&le; 2.0%) благодаря модернизации ZBO.<br />
+            • <b>Критический SLA: 100.0%</b> — дефицит пилотируемых миссий равен строго 0.0 тонн на всем горизонте.<br />
+            • <b>Совокупный SLA: 97.4%</b> — директивный норматив ТЗ (&ge; 97.0%) полностью соблюден.<br />
+            • <b>Бонусный контур «Геополитика»:</b> модель выдерживает санкционный скачок земных тарифов до +50%.
+          </p>
         </div>
 
-        <div class="col-2">
-          <div class="card" style="flex: 1;">
-            <div class="card-title">🌪️ Tornado-анализ чувствительности</div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Фактор риска</th>
-                  <th>Ущерб без мер</th>
-                  <th>Защита в системе</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Задержка ввода ISRU на 2 г.</td>
-                  <td>+850 млн у.е. LCC</td>
-                  <td>Шлюз 03 (Earth-New опцион)</td>
-                </tr>
-                <tr>
-                  <td>Штрафы Take-or-Pay</td>
-                  <td>до 120 млн/год</td>
-                  <td>Алгоритм NASA: Order = Reserved</td>
-                </tr>
-                <tr>
-                  <td>Рост спроса свыше +20%</td>
-                  <td>Дефицит бака</td>
-                  <td>Буфер 120 т + Emergency 80 т</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <table class="data-table" style="margin-top: 8px;">
+          <thead>
+            <tr>
+              <th>Фактор неопределенности</th>
+              <th>Потенциальный ущерб</th>
+              <th>Инженерная мера защиты в системе</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Задержка ввода ISRU на 2 года</td><td style="color: #b45309; font-weight: 700;">+850 млн у.е. LCC</td><td>Шлюз 03: Активация резервного опциона Earth-New (130 т/год).</td></tr>
+            <tr><td>Штрафы Take-or-Pay за недобор</td><td style="color: #b45309; font-weight: 700;">до 120 млн у.е./год</td><td>Алгоритм NASA MILP: Объем заказа строго равен бронированию.</td></tr>
+            <tr><td>Рост цен пусков Земли на +25%</td><td style="color: #b45309; font-weight: 700;">+435 млн у.е. LCC</td><td>Приоритетный забор лунного топлива (до 120 т/год по тарифу 3.0).</td></tr>
+            <tr><td>Аномальный пик спроса (&gt; +20%)</td><td style="color: #b45309; font-weight: 700;">Риск дефицита топлива</td><td>Экспресс-доставка Earth-Flex + неснижаемый Emergency-резерв 80 т.</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -621,45 +552,42 @@
     <div class="slide" id="slide-7">
       <div class="slide-header">
         <div>
-          <span class="slide-tag">&lt;слайд 07 // выводы и решения&gt;</span>
-          <h1 class="slide-title">ИТОГИ ПРОГРАММЫ И РЕКОМЕНДАЦИИ ДЛЯ УТВЕРЖДЕНИЯ</h1>
+          <span class="slide-tag">Слайд 7 // Итоги и Решения</span>
+          <h1 class="slide-title">Результаты выполнения кейса и проект решений</h1>
         </div>
-        <span class="slide-time">3:45 — 4:00</span>
+        <span class="slide-time">⏱ 3:45 — 4:00</span>
       </div>
 
       <div class="slide-body">
         <div class="col-2">
-          <div class="card card-accent" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div class="card-title">🏆 Результаты выполнения кейса</div>
-              <ul class="bullet-list">
-                <li><b>20 из 20 критериев ТЗ выполнены на 100% + бонус за геополитику.</b></li>
-                <li><b>Сходимость контрольного примера 2035 г. с точностью до 10^-4.</b></li>
-                <li><b>Экономия 1 096.8 млн у.е. NPV LCC</b> при алгоритме NASA MILP.</li>
-                <li><b>Лимит CAPEX соблюден с запасом 370 млн у.е.</b> до 2037 года.</li>
-                <li><b>Масштабируемость до 2045 г.</b> и ввод синтетического Канала F.</li>
-              </ul>
-            </div>
-            <div style="background: #000; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 11px; color: #ccff00;">
-              Экспорт в 1 клик: многостраничный отчет XLSX на 7 листов с единицами измерения.
-            </div>
+          <div class="card card-top-green" style="flex: 1;">
+            <div class="card-title card-title-green">🏆 Ключевые результаты команды</div>
+            <ul class="item-list">
+              <li><b>100% выполнение ТЗ:</b> Все 20 критериев кейса выполнены + реализован бонус за геополитику.</li>
+              <li><b>Абсолютная точность:</b> Сходимость контрольного примера 2035 г. с точностью до 10⁻⁴ т.</li>
+              <li><b>Экономия 1 096.8 млн у.е.:</b> Снижение NPV LCC на 11.81% при ядре NASA MILP.</li>
+              <li><b>Соблюдение CAPEX:</b> Запас +370 млн у.е. до 2037 г. и +1 190 млн у.е. суммарно.</li>
+              <li><b>Инженерная готовность:</b> Готовое веб-приложение оператора, 38 тестов, экспорт в XLSX.</li>
+            </ul>
           </div>
         </div>
 
         <div class="col-2">
-          <div class="card" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div class="card-title">📝 Проект решений Экспертного совета</div>
-              <ol style="margin-left: 20px; font-size: 12px; line-height: 1.6; color: #d4d4d8;">
-                <li>Принять целевой план на базе <b>NASA Space Logistics (MILP)</b> как базовую стратегию снабжения ОТУ.</li>
-                <li>Утвердить финансирование <b>ZBO-модернизации</b> в объеме 180 млн у.е. в 2036 г.</li>
-                <li>Санкционировать трехлетний график траншей <b>Lunar-ISRU</b> (250 + 500 + 500 млн у.е.).</li>
-                <li>Внедрить программный комплекс в качестве штатного рабочего места ситуационного центра.</li>
-              </ol>
-            </div>
-            <div style="text-align: center; padding-top: 15px; border-top: 1px solid #1f1f24;">
-              <div style="font-size: 16px; font-weight: 900; color: #ccff00;">СПАСИБО ЗА ВНИМАНИЕ!</div>
-              <div style="font-family: monospace; font-size: 11px; color: #a1a1aa; margin-top: 4px;">Готовы ответить на ваши вопросы (2 мин Q&A)</div>
+          <div class="card card-top-blue" style="flex: 1;">
+            <div class="card-title card-title-blue">📝 Проект решений для утверждения</div>
+            <ul class="item-list" style="margin-bottom: 20px;">
+              <li>1. Утвердить алгоритм NASA MILP в качестве штатного оптимизатора логистики ОТУ.</li>
+              <li>2. Санкционировать финансирование ZBO-модернизации (180 млн у.е.) в 2036 году.</li>
+              <li>3. Утвердить инвестиционный график Lunar-ISRU (250 + 500 + 500 млн у.е.).</li>
+              <li>4. Рекомендовать комплекс к опытно-промышленной эксплуатации в ЦУП.</li>
+            </ul>
+            <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 10px; padding: 12px; text-align: center;">
+              <div style="font-size: 13px; font-weight: 800; color: #0369a1;">
+                СПАСИБО ЗА ВНИМАНИЕ!
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #0284c7; margin-top: 4px;">
+                ГОТОВЫ К СЕССИИ ВОПРОСОВ И ОТВЕТОВ (Q&A)
+              </div>
             </div>
           </div>
         </div>
@@ -668,17 +596,17 @@
 
   </div>
 
-  <!-- Bottom Navigation Bar -->
+  <!-- Bottom Navigation -->
   <div class="footer-bar">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <button class="btn" id="prevBtn" onclick="prevSlide()">← Назад</button>
-      <button class="btn btn-primary" id="nextBtn" onclick="nextSlide()">Вперед →</button>
-      <span class="indicator" id="slideIndicator">СЛАЙД 1 ИЗ 7</span>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn" onclick="prevSlide()">← Назад</button>
+      <button class="btn" onclick="nextSlide()">Вперед →</button>
     </div>
-
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <span class="indicator" style="color: #a1a1aa;">НАВИГАЦИЯ: СТРЕЛКИ КЛАВИАТУРЫ [←] / [→] // ПОЛНЫЙ ЭКРАН [F11]</span>
-      <a href="http://localhost:3000" target="_blank" class="btn" style="color: #ccff00; border-color: rgba(204,255,0,0.4);">Открыть Дашборд ↗</a>
+    <div class="indicator" id="slide-indicator">Слайд 1 из 7</div>
+    <div>
+      <a href="http://localhost:5173" target="_blank" style="text-decoration: none;">
+        <button class="btn btn-primary">⚡ Открыть Ситуационный Центр</button>
+      </a>
     </div>
   </div>
 
@@ -686,41 +614,27 @@
     let currentSlide = 1;
     const totalSlides = 7;
 
-    function showSlide(n) {
-      if (n < 1) n = 1;
-      if (n > totalSlides) n = totalSlides;
-      currentSlide = n;
+    function showSlide(index) {
+      if (index < 1) index = 1;
+      if (index > totalSlides) index = totalSlides;
+      currentSlide = index;
 
       for (let i = 1; i <= totalSlides; i++) {
         const el = document.getElementById(`slide-${i}`);
-        if (el) el.classList.remove('active');
+        if (el) el.classList.toggle('active', i === currentSlide);
       }
-
-      const activeEl = document.getElementById(`slide-${currentSlide}`);
-      if (activeEl) activeEl.classList.add('active');
-
-      document.getElementById('slideIndicator').innerText = `СЛАЙД ${currentSlide} ИЗ ${totalSlides}`;
-      document.getElementById('prevBtn').disabled = (currentSlide === 1);
-      document.getElementById('nextBtn').disabled = (currentSlide === totalSlides);
+      document.getElementById('slide-indicator').innerText = `Слайд ${currentSlide} из ${totalSlides}`;
     }
 
-    function nextSlide() {
-      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
-    }
-
-    function prevSlide() {
-      if (currentSlide > 1) showSlide(currentSlide - 1);
-    }
+    function nextSlide() { showSlide(currentSlide + 1); }
+    function prevSlide() { showSlide(currentSlide - 1); }
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'Space') {
-        nextSlide();
-      } else if (e.key === 'ArrowLeft') {
-        prevSlide();
-      }
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+      if (e.key === 'Home') showSlide(1);
+      if (e.key === 'End') showSlide(totalSlides);
     });
-
-    showSlide(1);
   </script>
 </body>
 </html>
