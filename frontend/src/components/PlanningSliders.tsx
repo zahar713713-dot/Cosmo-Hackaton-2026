@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ChannelPlan, InvestmentsState, YearlyBalanceData } from '../types';
-import { Sliders, AlertCircle, Clock, Zap } from 'lucide-react';
+import { Sliders, AlertCircle, Clock, Zap, Shield } from 'lucide-react';
 
 interface PlanningSlidersProps {
   channelPlans: Record<number, Record<string, ChannelPlan>>;
@@ -289,25 +289,82 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
-                  {/* Order Volume Slider */}
+                  {/* Order Volume Slider & Numeric Stepper */}
                   <div className="p-3 rounded-lg bg-[#070709] border border-neutral-850">
-                    <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
-                      <span className="text-neutral-400 flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <span className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
                         <Zap className="w-3.5 h-3.5 text-[#ccff00]" />
-                        Фактический отбор топлива:
+                        Фактический отбор:
                       </span>
-                      <span className="text-[#ccff00] font-black text-sm">
-                        {plan.target_order_volume.toFixed(1)} т/год
-                      </span>
+                      <div className="flex items-center gap-1 bg-[#050507] p-1 rounded-lg border border-neutral-800">
+                        <button
+                          type="button"
+                          onClick={() => updateOrder(ch.id, Math.max(0, Math.round((plan.target_order_volume - 5) * 10) / 10))}
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Уменьшить на 5 т"
+                        >
+                          -5
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateOrder(ch.id, Math.max(0, Math.round((plan.target_order_volume - 1) * 10) / 10))}
+                          className="w-5 h-5 flex items-center justify-center text-xs font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-300 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Уменьшить на 1 т"
+                        >
+                          -
+                        </button>
+                        <div className="flex items-center">
+                          <input
+                            type="number"
+                            min={0}
+                            max={ch.maxCap}
+                            step="any"
+                            value={Number(plan.target_order_volume.toFixed(1))}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (!isNaN(val)) {
+                                const clamped = Math.max(0, Math.min(ch.maxCap, val));
+                                updateOrder(ch.id, Math.round(clamped * 10) / 10);
+                              }
+                            }}
+                            className="w-14 h-6 text-center text-xs font-mono font-black bg-neutral-950 border border-[#ccff00]/40 focus:border-[#ccff00] focus:ring-1 focus:ring-[#ccff00] text-[#ccff00] rounded outline-none px-1"
+                          />
+                          <span className="text-[10px] font-mono text-neutral-400 ml-1">т</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => updateOrder(ch.id, Math.min(ch.maxCap, Math.round((plan.target_order_volume + 1) * 10) / 10))}
+                          className="w-5 h-5 flex items-center justify-center text-xs font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-300 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Увеличить на 1 т"
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateOrder(ch.id, Math.min(ch.maxCap, Math.round((plan.target_order_volume + 5) * 10) / 10))}
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Увеличить на 5 т"
+                        >
+                          +5
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateOrder(ch.id, ch.maxCap)}
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-black bg-[#ccff00]/15 hover:bg-[#ccff00]/25 text-[#ccff00] rounded border border-[#ccff00]/40 transition ml-0.5 active:scale-95"
+                          title="Установить максимальную мощность"
+                        >
+                          MAX
+                        </button>
+                      </div>
                     </div>
                     <input
                       type="range"
                       min={0}
                       max={ch.maxCap}
-                      step={1}
+                      step={0.5}
                       value={plan.target_order_volume}
                       onChange={(e) => updateOrder(ch.id, Number(e.target.value))}
-                      className="w-full accent-[#ccff00] cursor-pointer h-3.5 sm:h-2.5 bg-neutral-800 rounded-lg touch-manipulation my-1"
+                      className="w-full accent-[#ccff00] cursor-pointer h-3 sm:h-2.5 bg-neutral-800 rounded-lg touch-manipulation my-1"
                     />
                     <div className="flex justify-between text-[10px] text-neutral-500 font-mono mt-1">
                       <span>0 т</span>
@@ -315,20 +372,82 @@ export const PlanningSliders: React.FC<PlanningSlidersProps> = ({
                     </div>
                   </div>
 
-                  {/* Reservation Slider */}
+                  {/* Reservation Slider & Numeric Stepper */}
                   <div className="p-3 rounded-lg bg-[#070709] border border-neutral-850">
-                    <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
-                      <span className="text-neutral-400">Зарезервированная мощность:</span>
-                      <span className="text-white font-black text-sm">{plan.reserved_capacity.toFixed(1)} т/год</span>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <span className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
+                        <Shield className="w-3.5 h-3.5 text-white" />
+                        Бронь мощности:
+                      </span>
+                      <div className="flex items-center gap-1 bg-[#050507] p-1 rounded-lg border border-neutral-800">
+                        <button
+                          type="button"
+                          onClick={() => updateReservation(ch.id, Math.max(0, Math.round((plan.reserved_capacity - 5) * 10) / 10))}
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Уменьшить на 5 т"
+                        >
+                          -5
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateReservation(ch.id, Math.max(0, Math.round((plan.reserved_capacity - 1) * 10) / 10))}
+                          className="w-5 h-5 flex items-center justify-center text-xs font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-300 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Уменьшить на 1 т"
+                        >
+                          -
+                        </button>
+                        <div className="flex items-center">
+                          <input
+                            type="number"
+                            min={0}
+                            max={ch.maxCap}
+                            step="any"
+                            value={Number(plan.reserved_capacity.toFixed(1))}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (!isNaN(val)) {
+                                const clamped = Math.max(0, Math.min(ch.maxCap, val));
+                                updateReservation(ch.id, Math.round(clamped * 10) / 10);
+                              }
+                            }}
+                            className="w-14 h-6 text-center text-xs font-mono font-black bg-neutral-950 border border-neutral-700 focus:border-white focus:ring-1 focus:ring-white text-white rounded outline-none px-1"
+                          />
+                          <span className="text-[10px] font-mono text-neutral-400 ml-1">т</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => updateReservation(ch.id, Math.min(ch.maxCap, Math.round((plan.reserved_capacity + 1) * 10) / 10))}
+                          className="w-5 h-5 flex items-center justify-center text-xs font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-300 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Увеличить на 1 т"
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateReservation(ch.id, Math.min(ch.maxCap, Math.round((plan.reserved_capacity + 5) * 10) / 10))}
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded border border-neutral-800 transition active:scale-95"
+                          title="Увеличить на 5 т"
+                        >
+                          +5
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateReservation(ch.id, ch.maxCap)}
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-black bg-white/15 hover:bg-white/25 text-white rounded border border-white/40 transition ml-0.5 active:scale-95"
+                          title="Установить максимальную мощность"
+                        >
+                          MAX
+                        </button>
+                      </div>
                     </div>
                     <input
                       type="range"
                       min={0}
                       max={ch.maxCap}
-                      step={1}
+                      step={0.5}
                       value={plan.reserved_capacity}
                       onChange={(e) => updateReservation(ch.id, Number(e.target.value))}
-                      className="w-full accent-white cursor-pointer h-3.5 sm:h-2.5 bg-neutral-800 rounded-lg touch-manipulation my-1"
+                      className="w-full accent-white cursor-pointer h-3 sm:h-2.5 bg-neutral-800 rounded-lg touch-manipulation my-1"
                     />
                     <div className="flex justify-between text-[10px] text-neutral-500 font-mono mt-1">
                       <span>Порог TOP: {topThreshold.toFixed(1)} т</span>
